@@ -17,6 +17,7 @@ import type { NewsModel } from "../../client/cafe/model.js";
 import { newsFeedRouter } from "../site-route.js";
 import { cafeStyles } from "./cafe.stylex.js";
 import {
+  cafeSubmissionPrompt,
   newsCopy,
   newsKindLabels,
   sortRules,
@@ -164,5 +165,6 @@ export const view = (model: NewsModel, h: HtmlBuilder<CafeMessage>): Html =>
         model.items.map((item) => itemView(h, item))
       ),
       sortSectionView(h),
+      h.p([], [cafeSubmissionPrompt]),
     ]
   );

@@ -971,9 +971,21 @@ const program = Effect.gen(function* generateContent() {
     Effect.mapError((cause) => buildError("cafe encode", cafeNewsFile, cause))
   );
 
-  const cafeNewsText = cafeNewsMarkdown(cafeData);
+  const cafeNewsSource = cafeNewsMarkdown(cafeData);
 
-  const cafeDirectoryText = cafeDirectoryMarkdown(cafeData);
+  const cafeNewsText = renderAgentPage(
+    cafeNewsSource,
+    "/news",
+    newsCopy.heading
+  );
+
+  const cafeDirectorySource = cafeDirectoryMarkdown(cafeData);
+
+  const cafeDirectoryText = renderAgentPage(
+    cafeDirectorySource,
+    "/directory",
+    directoryCopy.heading
+  );
 
   const searchPageText = [
     `# ${searchCopy.heading}`,
@@ -3274,7 +3286,7 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
   );
 
   const cafeNewsBody = yield* compileMarkdownBody(
-    cafeNewsText,
+    cafeNewsSource,
     "cafe-news.md",
     highlighter,
     emptyTargets,
@@ -3294,7 +3306,7 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
   );
 
   const cafeDirectoryBody = yield* compileMarkdownBody(
-    cafeDirectoryText,
+    cafeDirectorySource,
     "cafe-directory.md",
     highlighter,
     emptyTargets,

@@ -23,6 +23,9 @@ export const newsKindLabels = {
   video: "video",
 } as const satisfies Record<CafeNewsKindValue, string>;
 
+export const cafeSubmissionPrompt =
+  "Know a CAFE project or story? Ask your agent to suggest it.";
+
 export const newsCopy = {
   description:
     "Reviewed news from people who build with Cloudflare, Alchemy, Foldkit and Effect.",

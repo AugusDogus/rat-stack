@@ -15,6 +15,7 @@ import type {
 } from "@rat-stack/core/contracts";
 
 import {
+  cafeSubmissionPrompt,
   directoryCopy,
   letterNames,
   newsCopy,
@@ -26,8 +27,19 @@ import {
   sortSources,
   threadCounts,
 } from "../../web/src/features/cafe/copy.ts";
+import { cafeSubmissionGuide } from "../src/agent-guide.ts";
 
 const pageLimit = 100;
+
+const submissionSource = [
+  "<HumanOnly>",
+  cafeSubmissionPrompt,
+  "</HumanOnly>",
+  "",
+  "<AgentOnly>",
+  cafeSubmissionGuide("https://ratstack.sh"),
+  "</AgentOnly>",
+].join("\n\n");
 
 const linkText = (value: string) => value.replaceAll(/[[\]]/gu, "");
 
@@ -90,6 +102,7 @@ export const cafeNewsMarkdown = (data: CafeDataValue) => {
     "",
     `Prior art: ${sortSources.map((source) => `[${source.label}](${source.href})`).join(", ")}.`,
     "",
+    submissionSource,
   ].join("\n");
 };
 
@@ -113,4 +126,5 @@ export const cafeDirectoryMarkdown = (data: CafeDataValue) =>
     "",
     sortCafeProjects(data.projects, "updated").map(projectMarkdown).join("\n"),
     "",
+    submissionSource,
   ].join("\n");

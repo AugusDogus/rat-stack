@@ -2053,6 +2053,22 @@ it.effect(
         );
         expect(news).toContain("## How this list is sorted");
         expect(directory).toContain("# CAFE directory");
+
+        for (const route of ["/news", "/directory", "/llms.txt"]) {
+          const agentView = yield* responseText(
+            handler,
+            new Request(`http://localhost${route}`, {
+              headers: { accept: "text/markdown" },
+            })
+          );
+
+          expect(agentView).toContain("cafe-news.yml");
+          expect(agentView).toContain("cafe-project.yml");
+          expect(agentView).toContain(
+            "File only after the person approves that exact issue."
+          );
+          expect(agentView).toContain("Listing is not guaranteed.");
+        }
       })
     )
 );
