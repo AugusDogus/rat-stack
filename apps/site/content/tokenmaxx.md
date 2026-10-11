@@ -156,7 +156,7 @@ The [first Loopcraft](https://youtu.be/uC6slhCTXlA) built one loop: an agent wor
 
 - Loops that wake themselves, wait on real conditions, and survive restarts.
 - Agents that a supervisor can watch, steer, and prove are working.
-- A software factory with a boss, workers, and results checked before they land.
+- A software factory with results checked before they land.
 - Self-improvement: mistakes on the shipped path become fences. Stale fences get deleted.
 
 The factory needs something to build, so each of us builds a personal cloud inside a Linux container. It's the McGuffin. It also happens to be a place your harness could live afterward.
@@ -189,7 +189,7 @@ What each piece is for, from the table above and its repo:
 - [pi-until](https://github.com/joelhooks/pi-until): time, meaning watches and recurring wake-ups. Repo: "Session-scoped shell-condition watches that wake Pi when work is ready."
 - [rat-stack](https://github.com/joelhooks/rat-stack): the floor, meaning Effect, Alchemy, and the fence. Read [the fence](/lore/the-fence). Repo: "Agentic TypeScript scaffold: Effect 4, XState 6 + @xstate/effect, Alchemy infra, varlock config, and a fence that makes cheating uncomfortable".
 - [mischief](https://github.com/joelhooks/mischief): durable agent plans. Repo: "Durable agent plans: dynamic XState machines stored as data, run in Durable Objects, talking over Rat King." (It is built to run in Durable Objects; today a run executes from the CLI.) Its README says: "Early, and dogfooded daily. Today a run executes from the CLI with a file store … a run survives kills mid-step without redoing finished work. Agent turns run on Pi Durable against a real model, judges gate work, and mail goes out and comes back over Rat King, exactly once across crashes." A plan is a graph of agent work stored as data; stop it, crash it, or pause it and it resumes where it was and never re-runs a finished step.
-- [rat-king](https://github.com/joelhooks/rat-king): the network the plans talk over. Repo: "👑 Rat King: an encrypted, AT Protocol agent network. Pure rat-stack: Effect + Alchemy, deploys to Cloudflare and celld." Pre-alpha, with no network or deploy automation running yet.
+- [rat-king](https://github.com/joelhooks/rat-king): the network the plans talk over. Repo: "👑 Rat King: an encrypted, AT Protocol agent network. Pure rat-stack: Effect + Alchemy, deploys to Cloudflare and celld."
 - [Matt Pocock's skills](/lore/matt-pocock-skills): skills to combine and fork.
 - [Lauren Tan's skills](/lore/lauren-tan-skills): memory, orchestration, and verification skills.
 
