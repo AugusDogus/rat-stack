@@ -6,6 +6,7 @@ import {
   listPrompts,
 } from "@rat-stack/core";
 import { flagCapabilities } from "@rat-stack/core/flag-capabilities";
+import type { Flags } from "@rat-stack/core/flags";
 import { joinInterest } from "@rat-stack/core/join-interest";
 import { feedbackCapabilities } from "@rat-stack/learn/feedback";
 import { Layer } from "effect";
@@ -64,12 +65,17 @@ export const contentCapabilities = [
   ...learnCapabilities,
 ] as const;
 
-export const contentLayer = Layer.mergeAll(
-  learnLayer,
-  promptLibraryLayer,
-  cafeDirectoryLayer,
-  flagsLayer.pipe(Layer.orDie)
-).pipe(Layer.provideMerge(ContentStore.layer));
+export const contentLayerWithFlags = <E, R>(
+  selectedFlags: Layer.Layer<Flags, E, R>
+) =>
+  Layer.mergeAll(
+    learnLayer,
+    promptLibraryLayer,
+    cafeDirectoryLayer,
+    selectedFlags.pipe(Layer.orDie)
+  ).pipe(Layer.provideMerge(ContentStore.layer));
+
+export const contentLayer = contentLayerWithFlags(flagsLayer);
 
 const generatedExecuteProjection = toExecuteCapability(contentCapabilities);
 

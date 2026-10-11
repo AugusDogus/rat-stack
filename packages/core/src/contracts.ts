@@ -13,7 +13,11 @@ import { FileStatsError, FileStatsSchema } from "./stats.js";
 import { UnknownPage } from "./unknown-page.js";
 import { UnknownPrompt } from "./unknown-prompt.js";
 
-export { getFlagContract, listFlagsContract } from "./flag-contracts.js";
+export {
+  getFlagContract,
+  listFlagsContract,
+  setFlagContract,
+} from "./flag-contracts.js";
 
 export { UnknownPrompt } from "./unknown-prompt.js";
 

@@ -3,6 +3,7 @@
 import { NodeRuntime, NodeServices } from "@effect/platform-node";
 import { Approval } from "@rat-stack/capability";
 import { FileInspector } from "@rat-stack/core";
+import { FlagActor } from "@rat-stack/core/flag-control";
 import { eventFlags, Flags } from "@rat-stack/core/flags";
 import { Console, Effect, Layer } from "effect";
 
@@ -13,6 +14,7 @@ import { localLearnLayer } from "./learn-layer.js";
 import { localPromptLibraryLayer } from "./prompts.js";
 
 const program = runCommand(process.argv.slice(2)).pipe(
+  Effect.provideService(FlagActor, "local-cli"),
   // oxlint-disable-next-line promise/prefer-await-to-callbacks -- Oxlint mistakes this Effect handler for an async Promise callback.
   Effect.catchTag("FileStatsError", (error) =>
     Console.error(error.message).pipe(Effect.andThen(Effect.fail(error)))

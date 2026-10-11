@@ -1,6 +1,6 @@
 import { NodeServices } from "@effect/platform-node";
 import { describe, expect, it } from "@effect/vitest";
-import { Effect, Layer, Schema } from "effect";
+import { Effect, Exit, Layer, Option, Queue, Schema, Terminal } from "effect";
 import { CliOutput, Command } from "effect/cli";
 import { TestConsole } from "effect/testing";
 
@@ -161,6 +161,61 @@ describe("toCommand", () => {
         expect(denied).toBeInstanceOf(ApprovalDenied);
         yield* run(toCommand(approved), ["--message", "run", "--yes"]);
       })
+    );
+
+    test.effect(
+      "opt-in prompts honor refusal and consent; --yes needs no interactive input",
+      () =>
+        Effect.gen(function* interactiveApproval() {
+          const terminal = yield* Terminal.Terminal;
+
+          for (const consent of [false, true]) {
+            const input = yield* Queue.make<Terminal.UserInput>();
+
+            yield* Queue.offer(input, {
+              input: Option.some(consent ? "y" : "n"),
+              key: {
+                ctrl: false,
+                meta: false,
+                name: consent ? "y" : "n",
+                shift: false,
+              },
+            });
+
+            const result = yield* run(
+              toCommand(approved, { promptForApproval: true }),
+              ["--message", "run"]
+            ).pipe(
+              Effect.provideService(Terminal.Terminal, {
+                ...terminal,
+                display: () => Effect.void,
+                readInput: Effect.succeed(input),
+              }),
+              Effect.exit
+            );
+
+            expect(Exit.isSuccess(result)).toBe(consent);
+
+            if (!consent) {
+              expect((yield* result.pipe(Effect.flip))._tag).toBe(
+                "ApprovalDenied"
+              );
+            }
+          }
+
+          yield* run(toCommand(approved, { promptForApproval: true }), [
+            "--message",
+            "run",
+            "--yes",
+          ]).pipe(
+            Effect.provideService(Terminal.Terminal, {
+              ...terminal,
+              readInput: Effect.die(
+                new Error("Explicit approval must not read interactive input.")
+              ),
+            })
+          );
+        })
     );
 
     test.effect("decodes boolean and JSON positional values", () =>
