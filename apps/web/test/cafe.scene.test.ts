@@ -1,9 +1,26 @@
 import { it } from "@effect/vitest";
 import { click, expect, given, label, role, scene, text } from "foldkit/scene";
 
+import { Model } from "../src/client/cafe/model.js";
 import { update } from "../src/client/cafe/update.js";
 import { view } from "../src/features/cafe/index.js";
-import { directoryHome } from "./cafe-fixture.js";
+import { directoryHome, fullStack } from "./cafe-fixture.js";
+
+it("CAFE pages show the short prompt instead of the agent filing instructions", () => {
+  for (const model of [
+    directoryHome,
+    Model.News({ items: [], rankedAt: fullStack.date }),
+  ]) {
+    scene(
+      { update, view },
+      given(model),
+      expect(
+        text("Know a CAFE project or story? Ask your agent to suggest it.")
+      ).toExist(),
+      expect(text("Suggest a CAFE entry through your agent")).toBeAbsent()
+    );
+  }
+});
 
 it("pressing stack letters narrows the directory to projects with evidence for every pressed letter", () => {
   scene(

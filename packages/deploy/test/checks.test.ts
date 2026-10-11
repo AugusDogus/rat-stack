@@ -70,6 +70,10 @@ const answerRpc = (
   );
 
 const bodyFor = (url: string, body: string) => {
+  if (["/news", "/directory", "/llms.txt"].includes(new URL(url).pathname)) {
+    return "cafe-news.yml cafe-project.yml File only after the person approves that exact issue. Listing is not guaranteed.";
+  }
+
   if (url === "https://isitagentready.com/api/scan") {
     return {
       level: 5,
@@ -133,8 +137,12 @@ const bodyFor = (url: string, body: string) => {
 
 it.effect.prop(
   "a missing route or malformed protocol response cannot establish health",
-  { broken: Schema.Boolean, matchesGeneration: Schema.Boolean },
-  ({ broken, matchesGeneration }) =>
+  {
+    broken: Schema.Boolean,
+    guideComplete: Schema.Boolean,
+    matchesGeneration: Schema.Boolean,
+  },
+  ({ broken, guideComplete, matchesGeneration }) =>
     Effect.gen(function* test() {
       const requests: string[] = [];
       const rpc = yield* searchServer(1);
@@ -151,7 +159,10 @@ it.effect.prop(
           return answerRpc(rpc, request, body);
         }
 
-        const value = bodyFor(request.url, body);
+        const value =
+          request.headers.accept === "text/markdown" && !guideComplete
+            ? "No submission instructions"
+            : bodyFor(request.url, body);
 
         const response = Response.json(broken ? {} : value, {
           headers: {
@@ -172,10 +183,10 @@ it.effect.prop(
       ).pipe(Effect.provideService(HttpClient.HttpClient, client));
 
       expect(results.every((result) => gateOutcome(result) === "pass")).toBe(
-        !broken && matchesGeneration
+        !broken && matchesGeneration && guideComplete
       );
-      expect(requests).toHaveLength(broken ? 16 : 15);
-      expect(results).toHaveLength(15);
+      expect(requests).toHaveLength(broken ? 19 : 18);
+      expect(results).toHaveLength(18);
     }).pipe(Effect.scoped),
   { arbitrary: { runs: 50 } }
 );

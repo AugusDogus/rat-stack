@@ -71,6 +71,14 @@ for route in "${routes[@]}"; do
   printf '%s %s\n' "$status" "$route"
 done
 
+for route in /news /directory /llms.txt; do
+  curl --fail --silent --show-error --max-time 20 --header 'accept: text/markdown' "${base_url}${route}" >"$tmp_dir/cafe-guide.md" || fail "GET ${route} agent view did not complete"
+  for required in 'cafe-news.yml' 'cafe-project.yml' 'File only after the person approves that exact issue.' 'Listing is not guaranteed.'; do
+    grep --fixed-strings --quiet "$required" "$tmp_dir/cafe-guide.md" || fail "${route} agent view lacks: ${required}"
+  done
+  printf 'CAFE submission guide: %s\n' "$route"
+done
+
 curl --fail --silent --show-error --request POST "${base_url}/mcp" \
   --header 'accept: application/json, text/event-stream' --header 'content-type: application/json' \
   --header 'MCP-Protocol-Version: 2026-07-28' --header 'Mcp-Method: tools/list' \
