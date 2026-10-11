@@ -8,6 +8,8 @@ import {
 } from "@rat-stack/core/contracts";
 import { Effect, Schema } from "effect";
 
+import { tokenmaxxTitle } from "../src/house-ad-copy.ts";
+
 export const linkedSourceSchema = Schema.Struct({
   accessed: Schema.String,
   kind: Schema.Literal("linked").pipe(
@@ -98,7 +100,7 @@ export const copyPrompts = {
     label: "Copy prompt",
     showText: true,
     text: [
-      'Check my setup for the "how to burn a trillion tokens and get good results" session.',
+      `Check my setup for the "${tokenmaxxTitle}" session.`,
       "1. Check that Docker is running (Docker Desktop or OrbStack).",
       "2. Create a private repo from the joelhooks/rat-stack template and clone it: gh repo create my-factory --private --template joelhooks/rat-stack",
       "3. Read https://ratstack.sh/llms.txt",

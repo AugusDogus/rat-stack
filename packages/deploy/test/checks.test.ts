@@ -132,9 +132,21 @@ const bodyFor = (url: string, body: string) => {
 };
 
 it.effect.prop(
-  "a missing route or malformed protocol response cannot establish health",
-  { broken: Schema.Boolean, matchesGeneration: Schema.Boolean },
-  ({ broken, matchesGeneration }) =>
+  "health requires valid protocols, matching content, and the workshop indexing policy",
+  {
+    broken: Schema.Boolean,
+    matchesGeneration: Schema.Boolean,
+    pageIndexable: Schema.Boolean,
+    sitemapListed: Schema.Boolean,
+    subpathsNoindex: Schema.Boolean,
+  },
+  ({
+    broken,
+    matchesGeneration,
+    pageIndexable,
+    sitemapListed,
+    subpathsNoindex,
+  }) =>
     Effect.gen(function* test() {
       const requests: string[] = [];
       const rpc = yield* searchServer(1);
@@ -153,13 +165,35 @@ it.effect.prop(
 
         const value = bodyFor(request.url, body);
 
-        const response = Response.json(broken ? {} : value, {
-          headers: {
-            "content-type": "application/json",
-            etag: `W/"${matchesGeneration ? "test-generation" : "old-generation"}:default:${encodeURIComponent(new URL(request.url).pathname)}"`,
-          },
-          status: broken ? 503 : 200,
+        const path = new URL(request.url).pathname;
+        const workshop = path === "/tokenmaxx";
+        const sitemap = path === "/sitemap.xml";
+        const transaction = path.startsWith("/tokenmaxx/");
+
+        const headers = new Headers({
+          "cache-control": "no-store",
+          "content-type": "application/json",
+          etag: `W/"${matchesGeneration ? "test-generation" : "old-generation"}:default:${encodeURIComponent(path)}"`,
         });
+
+        if ((workshop && !pageIndexable) || (transaction && subpathsNoindex)) {
+          headers.set("x-robots-tag", "noindex");
+        }
+
+        const sitemapBody = sitemapListed
+          ? "<url><loc>https://example.com/tokenmaxx</loc></url>"
+          : "<urlset></urlset>";
+
+        const response =
+          workshop || sitemap
+            ? new Response(sitemap ? sitemapBody : "Workshop", {
+                headers,
+                status: broken ? 503 : 200,
+              })
+            : Response.json(broken ? {} : value, {
+                headers,
+                status: broken ? 503 : 200,
+              });
 
         return Effect.succeed(HttpClientResponse.fromWeb(request, response));
       });
@@ -172,10 +206,14 @@ it.effect.prop(
       ).pipe(Effect.provideService(HttpClient.HttpClient, client));
 
       expect(results.every((result) => gateOutcome(result) === "pass")).toBe(
-        !broken && matchesGeneration
+        !broken &&
+          matchesGeneration &&
+          pageIndexable &&
+          sitemapListed &&
+          subpathsNoindex
       );
-      expect(requests).toHaveLength(broken ? 16 : 15);
-      expect(results).toHaveLength(15);
+      expect(requests).toHaveLength(broken ? 23 : 22);
+      expect(results).toHaveLength(22);
     }).pipe(Effect.scoped),
   { arbitrary: { runs: 50 } }
 );

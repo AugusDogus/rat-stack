@@ -9,6 +9,7 @@ import type {
   ContentMetadata,
 } from "./content-data.js";
 import { markdownDiscoveryLinks } from "./content-links.js";
+import { tokenmaxxTitle } from "./house-ad-copy.js";
 import { canonicalMarkdownLinks } from "./markdown-links.js";
 
 export {
@@ -130,7 +131,7 @@ curl --request POST '${origin}/api/execute' \\
 # {"diagnostic":null,"logs":[],"result":2,"toolCalls":[],"truncated":false}
 \`\`\`
 
-${agentNextActions(origin)}
+${agentNextActions(origin, tokenmaxxTitle)}
 ## Source files
 
 ${entryList(catalog.resources.filter((resource) => resource.kind === "law"))}
@@ -220,6 +221,7 @@ export const publicPaths = (catalog: ContentCatalog) =>
     "/openapi.json",
     "/robots.txt",
     "/sitemap.xml",
+    "/tokenmaxx",
     "/skills",
     "/lore",
     "/systems",
@@ -242,9 +244,12 @@ export const sitemapXml = (
   catalog: ContentCatalog
 ) => `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${catalog.pageRoutes
-  .filter((path) => path !== "/log.md")
-  .map((path) => {
+${[...catalog.pageRoutes, "/tokenmaxx"]
+  .flatMap((path) => {
+    if (path === "/log.md") {
+      return [];
+    }
+
     const resource = catalog.resources.find(
       (entry) => entry.routePath === path
     );

@@ -36,7 +36,7 @@ import {
   contentPagePath,
 } from "../src/content-data.ts";
 import { markdownDiscoveryLinks } from "../src/content-links.ts";
-import { houseAdCopy } from "../src/house-ad-copy.ts";
+import { houseAdCopy, tokenmaxxTitle } from "../src/house-ad-copy.ts";
 import {
   addInboundCounts,
   backlinksFor,
@@ -358,7 +358,7 @@ __INTEREST_LINK__
 
 const interestConfirmBody = `
 <h1>Confirm your email</h1>
-<p>You asked to hear about "how to burn a trillion tokens," a four-hour workshop on agent harnesses at ratstack.sh. Confirm your email to get one email when the date is set, and that's it.</p>
+<p>You asked to hear about "${tokenmaxxTitle}," a four-hour workshop on agent harnesses at ratstack.sh. Confirm your email to get one email when the date is set, and that's it.</p>
 <form method="post" action="/tokenmaxx/confirm">
 <input type="hidden" name="token" value="__INTEREST_TOKEN__" />
 <p><button type="submit">Confirm my email</button></p>
@@ -1918,7 +1918,9 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
     "No verify"
   );
 
-  const tokenmaxxSource = yield* readText("apps/site/content/tokenmaxx.md");
+  const tokenmaxxSource = (yield* readText(
+    "apps/site/content/tokenmaxx.md"
+  )).replaceAll("{{TOKENMAXX_TITLE}}", tokenmaxxTitle);
 
   const tokenmaxxBody = yield* compileMarkdownBody(
     tokenmaxxSource,
@@ -1996,9 +1998,9 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
       )
   );
 
-  const interestConfirmationEmail = yield* readText(
+  const interestConfirmationEmail = (yield* readText(
     "apps/site/content/tokenmaxx-confirmation-email.txt"
-  );
+  )).replaceAll("{{TOKENMAXX_TITLE}}", tokenmaxxTitle);
 
   const skillIndexBody = yield* compileMarkdownBody(
     skillIndexSourceMarkdown,
@@ -2113,7 +2115,7 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
     "- [CAFE directory](__RATSTACK_ORIGIN__/directory): reviewed projects with per-letter stack evidence; also the `listCafeProjects` tool",
     "- [Docs search](__RATSTACK_ORIGIN__/search): search the rules, lore, skills, and prompts in a browser; `?q=` opens a query; agents call the `search` and `read` tools",
     "",
-    agentNextActions(originToken),
+    agentNextActions(originToken, tokenmaxxTitle),
     "## Source files",
     "",
     entryList(publicSpecs),
@@ -2830,18 +2832,16 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
   ).slice(0, 16);
 
   const tokenmaxxMetadata = {
-    description:
-      "Loopcraft: the outer loop. A four-hour working session building agent harnesses.",
-    noindex: true,
+    description: "A four-hour working session with Joel Hooks.",
     path: tokenmaxxRoutePath,
-    title: "how to burn a trillion tokens and get good results",
+    title: tokenmaxxTitle,
   } as const;
 
   const interestPageMetadata = {
     description: tokenmaxxMetadata.description,
     noindex: true,
     path: tokenmaxxRoutePath,
-    title: "Workshop interest | rat-stack",
+    title: tokenmaxxTitle,
   } as const;
 
   const glossaryIndexMetadata = {
