@@ -5,6 +5,7 @@ import type {
   AssetReadError,
   ResourceNotFound,
 } from "@rat-stack/core/contracts";
+import { Flags } from "@rat-stack/core/flags";
 import { IntakeTicket } from "@rat-stack/core/intake";
 import type { InterestTokens } from "@rat-stack/core/interest";
 import { Learner } from "@rat-stack/learn";
@@ -1120,6 +1121,7 @@ export interface WebBotAuthOptions {
 }
 
 export interface MischiefRouteOptions {
+  readonly flags?: Flags["Service"] | undefined;
   readonly feedback?: ReturnType<typeof feedbackAccess> | undefined;
   readonly contentStore?: ContentStore["Service"] | undefined;
   readonly assets?: StaticAssets["Service"] | undefined;
@@ -1247,7 +1249,11 @@ export const mischiefRoutes = (options: MischiefRouteOptions = {}) =>
         Layer.provideMerge(options.feedback?.requests ?? feedbackRequests()),
         Layer.provideMerge(contentRequests(store, learner)),
         Layer.provideMerge(promptLibraryLayer),
-        Layer.provideMerge(flagsLayer.pipe(Layer.orDie)),
+        Layer.provideMerge(
+          options.flags === undefined
+            ? flagsLayer.pipe(Layer.orDie)
+            : Layer.succeed(Flags, options.flags)
+        ),
         Layer.provideMerge(cafeDirectoryLayer),
         Layer.provideMerge(
           Layer.merge(

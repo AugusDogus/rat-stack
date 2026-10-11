@@ -19,6 +19,16 @@
       "import": "./dist/flags.js",
       "default": "./dist/flags.js"
     },
+    "./flag-control": {
+      "types": "./src/flag-control.ts",
+      "import": "./dist/flag-control.js",
+      "default": "./dist/flag-control.js"
+    },
+    "./flag-write-capabilities": {
+      "types": "./src/flag-write-capabilities.ts",
+      "import": "./dist/flag-write-capabilities.js",
+      "default": "./dist/flag-write-capabilities.js"
+    },
     "./flag-capabilities": {
       "types": "./src/flag-capabilities.ts",
       "import": "./dist/flag-capabilities.js",

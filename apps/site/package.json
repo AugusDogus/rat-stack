@@ -14,6 +14,11 @@
       "import": "./src/capabilities/index.ts",
       "default": "./src/capabilities/index.ts"
     },
+    "./preview-rpc-worker": {
+      "types": "./src/preview-rpc-worker.ts",
+      "import": "./src/preview-rpc-worker.ts",
+      "default": "./src/preview-rpc-worker.ts"
+    },
     "./rpc-worker": {
       "types": "./src/rpc-worker.ts",
       "import": "./src/rpc-worker.ts",

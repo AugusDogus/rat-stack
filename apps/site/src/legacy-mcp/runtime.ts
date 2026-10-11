@@ -1,16 +1,19 @@
 import type { Sandbox } from "@rat-stack/capability/sandbox";
+import { Flags } from "@rat-stack/core/flags";
 import { Context, Effect, Layer } from "effect";
 import * as HttpEffect from "effect/http/HttpEffect";
 import * as HttpRouter from "effect/http/HttpRouter";
 
 import { legacyMcpProtocols, mcpLayer } from "../app.js";
-import { contentLayer } from "../capabilities/index.js";
+import { contentLayerWithFlags } from "../capabilities/index.js";
+import { flagsLayer } from "../flags.js";
 import type { StaticAssets } from "../static-assets.js";
 
 type WebHandler = (request: Request) => Promise<Response>;
 
 export const legacyMcpRuntime = <R>(
-  sandbox: Layer.Layer<Sandbox | StaticAssets, never, R>
+  sandbox: Layer.Layer<Sandbox | StaticAssets, never, R>,
+  flags?: Flags["Service"]
 ) =>
   Effect.gen(function* makeLegacyMcpRuntime() {
     const scope = yield* Effect.scope;
@@ -19,7 +22,11 @@ export const legacyMcpRuntime = <R>(
     const context = yield* Layer.buildWithMemoMap(
       Layer.provideMerge(
         mcpLayer(legacyMcpProtocols).pipe(
-          Layer.provide(contentLayer),
+          Layer.provide(
+            contentLayerWithFlags(
+              flags === undefined ? flagsLayer : Layer.succeed(Flags, flags)
+            )
+          ),
           Layer.provide(sandbox)
         ),
         HttpRouter.layer

@@ -1,11 +1,12 @@
 import { toCommand } from "@rat-stack/capability";
 import { formatFileStats, inspectFile } from "@rat-stack/core";
+import { setFlag } from "@rat-stack/core/flag-write-capabilities";
 import { Console, Effect, Layer } from "effect";
 import { Command, Flag } from "effect/cli";
 
 import { intakeCommand } from "./intake.js";
 import {
-  cliCapabilities,
+  commandCapabilities,
   SERVE_HOST,
   DEVTOOLS_MCP_PATH,
   codeMode,
@@ -18,14 +19,17 @@ import { VERSION } from "./version.js";
 
 export { VERSION } from "./version.js";
 
-const capabilityCommands = cliCapabilities.map((capability) => {
+const capabilityCommands = commandCapabilities.map((capability) => {
   const command =
     capability === inspectFile
       ? toCommand(capability, {
           positional: ["path"],
           render: formatFileStats,
         }).pipe(Command.withAlias("stats"))
-      : toCommand(capability);
+      : toCommand(
+          capability,
+          capability === setFlag ? { promptForApproval: true } : undefined
+        );
 
   return command;
 });

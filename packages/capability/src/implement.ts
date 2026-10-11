@@ -57,10 +57,22 @@ export const implement = <
 
 export type { Around } from "./call-watch.js";
 
-export const aroundHandlers = <const Caps extends readonly AnyCapability[]>(
+export function aroundHandlers<const Caps extends readonly AnyCapability[]>(
   capabilities: Caps,
   around: Around
-): Caps => {
+): Caps;
+export function aroundHandlers<
+  ContractType extends AnyContract,
+  Requirements,
+  ExtraRequirements = never,
+>(
+  capabilities: readonly [Capability<ContractType, Requirements>],
+  around: Around<ContractFailureOf<ContractType>["Type"], ExtraRequirements>
+): readonly [Capability<ContractType, Requirements | ExtraRequirements>];
+export function aroundHandlers(
+  capabilities: readonly AnyCapability[],
+  around: Around<unknown, unknown>
+): readonly AnyCapability[] {
   const wrapped = capabilities.map(
     ({ contract, handler }) =>
       new CapabilityRecord({
@@ -71,7 +83,5 @@ export const aroundHandlers = <const Caps extends readonly AnyCapability[]>(
       })
   );
 
-  // SAFETY: each element keeps its contract, and `Around` is parametric in the success, failure, and requirement channels, so every handler keeps its exact type.
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion, anti-slop/no-chained-type-assertions -- The mapped runtime array cannot carry the tuple type of `Caps`.
-  return wrapped as unknown as Caps;
-};
+  return wrapped;
+}

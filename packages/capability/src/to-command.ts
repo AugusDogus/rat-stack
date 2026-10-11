@@ -1,7 +1,15 @@
-import { Console, Effect, Option, Predicate, Schema, SchemaAST } from "effect";
-import { Argument, Command, Flag } from "effect/cli";
+import {
+  Console,
+  Effect,
+  Layer,
+  Option,
+  Predicate,
+  Schema,
+  SchemaAST,
+} from "effect";
+import { Argument, Command, Flag, Prompt } from "effect/cli";
 
-import { Approval } from "./approval.js";
+import { Approval, ApprovalDenied } from "./approval.js";
 import type {
   AnyCapability,
   FailureOf,
@@ -13,6 +21,7 @@ import type {
 
 export interface ToCommandOptions<Output> {
   readonly name?: string | undefined;
+  readonly promptForApproval?: boolean | undefined;
   readonly positional?: readonly string[] | undefined;
   readonly render?: ((output: Output) => string) | undefined;
 }
@@ -161,6 +170,48 @@ const JSON_FLAG = "json";
 
 const APPROVAL_FLAG = "yes";
 
+const promptApproval = (description: string) =>
+  Layer.effect(
+    Approval,
+    Effect.gen(function* captureApprovalPrompt() {
+      // @effect-diagnostics-next-line unstableApiUsage:off -- The CLI projection uses the workspace-pinned experimental prompt environment.
+      const environment = yield* Effect.context<Prompt.Environment>();
+
+      return Approval.of({
+        approve: Effect.fn("Cli.approve")(function* approve(
+          capabilityName: string
+        ) {
+          // @effect-diagnostics-next-line unstableApiUsage:off -- Interactive CLI approval uses the workspace-pinned confirmation widget.
+          const prompt = Prompt.Confirm({
+            initial: false,
+            message: `Approve ${capabilityName} ${description}?`,
+          });
+
+          // @effect-diagnostics-next-line unstableApiUsage:off -- Interactive CLI approval uses the workspace-pinned prompt runner.
+          const approved = yield* Prompt.run(prompt).pipe(
+            Effect.mapError(
+              () =>
+                new ApprovalDenied({
+                  capabilityName,
+                  reason:
+                    "Interactive approval is unavailable. Use --yes for explicit approval.",
+                })
+            )
+          );
+
+          if (!approved) {
+            return yield* new ApprovalDenied({
+              capabilityName,
+              reason: "Approval refused.",
+            });
+          }
+
+          return yield* Effect.void;
+        }, Effect.provideContext(environment)),
+      });
+    })
+  );
+
 export const toCommand = <C extends AnyCapability>(
   capability: C,
   options?: ToCommandOptions<OutputOf<C>["Type"]>
@@ -234,9 +285,14 @@ export const toCommand = <C extends AnyCapability>(
 
       const input = yield* decodeInput(provided);
 
+      const approval =
+        options?.promptForApproval === true
+          ? promptApproval(JSON.stringify(input))
+          : Approval.denyAll;
+
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Decoded through `contract.input`, whose Type `C` makes precise.
       const output = yield* run(input).pipe(
-        Effect.provide(yes === true ? Approval.allowAll : Approval.denyAll)
+        Effect.provide(yes === true ? Approval.allowAll : approval)
       );
 
       const text =
