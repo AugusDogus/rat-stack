@@ -18,7 +18,12 @@ import { Message } from "../../client/cafe/message.js";
 import type { CafeMessage } from "../../client/cafe/message.js";
 import type { DirectoryModel } from "../../client/cafe/model.js";
 import { cafeStyles } from "./cafe.stylex.js";
-import { directoryCopy, letterNames, projectCount } from "./copy.js";
+import {
+  cafeSubmissionPrompt,
+  directoryCopy,
+  letterNames,
+  projectCount,
+} from "./copy.js";
 import { authorView } from "./news.js";
 
 const badgeView = (
@@ -146,6 +151,7 @@ export const view = (
         [h.Class(stylex.props(cafeStyles.list).className ?? "")],
         shown.map((project) => projectView(h, project))
       ),
+      h.p([], [cafeSubmissionPrompt]),
     ]
   );
 };

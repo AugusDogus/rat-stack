@@ -70,6 +70,10 @@ const answerRpc = (
   );
 
 const bodyFor = (url: string, body: string) => {
+  if (["/news", "/directory", "/llms.txt"].includes(new URL(url).pathname)) {
+    return "cafe-news.yml cafe-project.yml File only after the person approves that exact issue. Listing is not guaranteed.";
+  }
+
   if (url === "https://isitagentready.com/api/scan") {
     return {
       level: 5,
@@ -132,9 +136,10 @@ const bodyFor = (url: string, body: string) => {
 };
 
 it.effect.prop(
-  "health requires valid protocols, matching content, and the workshop indexing policy",
+  "health requires valid protocols, matching content, workshop indexing, and submission instructions",
   {
     broken: Schema.Boolean,
+    guideComplete: Schema.Boolean,
     matchesGeneration: Schema.Boolean,
     pageIndexable: Schema.Boolean,
     sitemapListed: Schema.Boolean,
@@ -142,6 +147,7 @@ it.effect.prop(
   },
   ({
     broken,
+    guideComplete,
     matchesGeneration,
     pageIndexable,
     sitemapListed,
@@ -163,7 +169,10 @@ it.effect.prop(
           return answerRpc(rpc, request, body);
         }
 
-        const value = bodyFor(request.url, body);
+        const value =
+          request.headers.accept === "text/markdown" && !guideComplete
+            ? "No submission instructions"
+            : bodyFor(request.url, body);
 
         const path = new URL(request.url).pathname;
         const workshop = path === "/tokenmaxx";
@@ -207,13 +216,14 @@ it.effect.prop(
 
       expect(results.every((result) => gateOutcome(result) === "pass")).toBe(
         !broken &&
+          guideComplete &&
           matchesGeneration &&
           pageIndexable &&
           sitemapListed &&
           subpathsNoindex
       );
-      expect(requests).toHaveLength(broken ? 23 : 22);
-      expect(results).toHaveLength(22);
+      expect(requests).toHaveLength(broken ? 26 : 25);
+      expect(results).toHaveLength(25);
     }).pipe(Effect.scoped),
   { arbitrary: { runs: 50 } }
 );

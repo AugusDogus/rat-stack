@@ -416,6 +416,31 @@ export const postDeployChecks = Effect.fn("postDeployChecks")(
       );
     }
 
+    for (const route of ["/news", "/directory", "/llms.txt"]) {
+      verdicts.push(
+        yield* measuredCheck(
+          `cafe-submission-guide:${route}`,
+          Effect.gen(function* cafeSubmissionGuideCheck() {
+            const response = yield* client.get(`${url}${route}`, {
+              headers: { accept: "text/markdown" },
+            });
+
+            const text = yield* response.text;
+
+            return (
+              response.status === 200 &&
+              text.includes("cafe-news.yml") &&
+              text.includes("cafe-project.yml") &&
+              text.includes(
+                "File only after the person approves that exact issue."
+              ) &&
+              text.includes("Listing is not guaranteed.")
+            );
+          })
+        )
+      );
+    }
+
     verdicts.push(
       yield* measuredCheck(
         "tokenmaxx-sitemap",
