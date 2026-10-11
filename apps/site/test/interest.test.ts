@@ -168,12 +168,12 @@ it.effect(
 
           expect(text).toContain('id="interested"');
           expect(text).toContain("Apply for a free seat");
-          expect(text).toContain("Free, by application. Very limited seats.");
+          expect(text).toContain("Free, by application.");
           expect(text).toContain("The date gets set with the people picked.");
           expect(text).toContain("How it works");
           expect(text).toContain("sends nothing until you say yes.");
           expect(text).toContain(
-            "Joel reads every application and picks 2–3 people."
+            "Joel reads every application and picks who joins."
           );
           expect(text).toContain(
             "Check your setup before you come. Your coding agent finds what"
@@ -641,7 +641,7 @@ const tokenmaxxPage = (handler: WebHandler, accept: string) =>
   );
 
 const setupPromptLines = [
-  'Check my setup for the "how to burn a trillion tokens and get good results" session.',
+  'Check my setup for the "Loops That Never Stop Shipping: Tokenmaxxing Efficiently" session.',
   "1. Check that Docker is running (Docker Desktop or OrbStack).",
   "2. Create a private repo from the joelhooks/rat-stack template and clone it: gh repo create my-factory --private --template joelhooks/rat-stack",
   "3. Read https://ratstack.sh/llms.txt",
@@ -681,7 +681,7 @@ it.effect(
         "https://ratstack.sh/tokenmaxx#interested"
       );
       expect(
-        searchContent("burn a trillion tokens workshop").map(
+        searchContent("loops never stop shipping workshop").map(
           ({ routePath }) => routePath
         )
       ).not.toContain("/tokenmaxx");
@@ -742,7 +742,7 @@ it.effect(
 
         expect(response.headers.get("content-type")).toContain("text/markdown");
         expect(markdown).toContain(
-          "# how to burn a trillion tokens and get good results"
+          "# Loops That Never Stop Shipping: Tokenmaxxing Efficiently"
         );
         expect(markdown).not.toContain("<form");
       })
@@ -785,13 +785,15 @@ it.effect(
         const link = linkIn(mail?.text ?? "");
 
         expect(mail?.from).toBe("workshop@ratstack.sh");
-        expect(mail?.subject).toBe("Confirm: how to burn a trillion tokens");
+        expect(mail?.subject).toBe(
+          "Confirm: Loops That Never Stop Shipping: Tokenmaxxing Efficiently"
+        );
         expect(mail?.to).toBe("reader@example.com");
         expect(link).not.toBe("");
         expect(mail?.text).toBe(
           `Hi,
 
-You asked to hear about "how to burn a trillion tokens," a four-hour workshop on agent harnesses at ratstack.sh.
+You asked to hear about "Loops That Never Stop Shipping: Tokenmaxxing Efficiently," a four-hour workshop on agent harnesses at ratstack.sh.
 
 Confirm your email:
 ${link}
@@ -988,7 +990,7 @@ it.effect("renders the four confirm pages with the approved copy", () =>
 
       expect(pending).toContain("<h1>Confirm your email</h1>");
       expect(pending).toContain(
-        '<p>You asked to hear about "how to burn a trillion tokens," a four-hour workshop on agent harnesses at ratstack.sh. Confirm your email to get one email when the date is set, and that\'s it.</p>'
+        '<p>You asked to hear about "Loops That Never Stop Shipping: Tokenmaxxing Efficiently," a four-hour workshop on agent harnesses at ratstack.sh. Confirm your email to get one email when the date is set, and that\'s it.</p>'
       );
       expect(pending).toContain(
         '<button type="submit">Confirm my email</button>'

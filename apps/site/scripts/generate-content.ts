@@ -358,7 +358,7 @@ __INTEREST_LINK__
 
 const interestConfirmBody = `
 <h1>Confirm your email</h1>
-<p>You asked to hear about "how to burn a trillion tokens," a four-hour workshop on agent harnesses at ratstack.sh. Confirm your email to get one email when the date is set, and that's it.</p>
+<p>You asked to hear about "Loops That Never Stop Shipping: Tokenmaxxing Efficiently," a four-hour workshop on agent harnesses at ratstack.sh. Confirm your email to get one email when the date is set, and that's it.</p>
 <form method="post" action="/tokenmaxx/confirm">
 <input type="hidden" name="token" value="__INTEREST_TOKEN__" />
 <p><button type="submit">Confirm my email</button></p>
@@ -2830,10 +2830,9 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
   ).slice(0, 16);
 
   const tokenmaxxMetadata = {
-    description:
-      "Loopcraft: the outer loop. A four-hour working session building agent harnesses.",
+    description: "A four-hour working session with Joel Hooks.",
     path: tokenmaxxRoutePath,
-    title: "how to burn a trillion tokens and get good results",
+    title: "Loops That Never Stop Shipping: Tokenmaxxing Efficiently",
   } as const;
 
   const interestPageMetadata = {

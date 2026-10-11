@@ -1,9 +1,9 @@
 From: workshop@ratstack.sh
-Subject: Confirm: how to burn a trillion tokens
+Subject: Confirm: Loops That Never Stop Shipping: Tokenmaxxing Efficiently
 
 Hi,
 
-You asked to hear about "how to burn a trillion tokens," a four-hour workshop on agent harnesses at ratstack.sh.
+You asked to hear about "Loops That Never Stop Shipping: Tokenmaxxing Efficiently," a four-hour workshop on agent harnesses at ratstack.sh.
 
 Confirm your email:
 {confirm_link}

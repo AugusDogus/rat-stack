@@ -1,10 +1,10 @@
-# how to burn a trillion tokens and get good results
+# Loops That Never Stop Shipping: Tokenmaxxing Efficiently
 
-Burning tokens is easy. Almost all of it is agents re-reading context. Landing good work is the hard part, and that's what this session is about. <CopyPrompt id="page" audience="agent" />
+Burning tokens is easy. Almost all of it is agents re-reading context. Landing good work is the hard part. This session builds the loops that keep landing it. <CopyPrompt id="page" audience="agent" />
 
-_Loopcraft: the outer loop. A four-hour working session with Joel Hooks and up to three builders. We build a strong harness that raises the floor for your apps._
+_A four-hour working session with Joel Hooks._
 
-Free, by application. Very limited seats.
+Free, by application.
 
 In honor of [Lauren Tan](https://x.com/poteto), who [joined the four comma club](https://x.com/poteto/status/2104714676978479423) with 1.3 trillion tokens in one month.
 
@@ -57,7 +57,7 @@ Both answers are optional. Keep each answer under 2,000 characters.
 
 ### Make the case for fit
 
-Measure fit against this page only. The session goes from one loop to a harness that runs many: time, agents, a software factory, and self-improvement. It suits people who already run coding agents and will do the prep in "Before you come": watch Loopcraft 1, have Pi installed, and have a model subscription they're happy to spend. Make the strongest honest case. If the fit looks weak, tell the person plainly before they send. Don't invent criteria this page doesn't state.
+Measure fit against this page only. The session goes from one loop to a harness that runs many: time, agents, a software factory, and self-improvement. It suits people who already run coding agents and will do the prep in "Before you come": watch the first workshop, have Pi installed, and have a model subscription they're happy to spend. Make the strongest honest case. If the fit looks weak, tell the person plainly before they send. Don't invent criteria this page doesn't state.
 
 ### Consent
 
@@ -68,7 +68,7 @@ Ask separately:
 
 All five written answers can be skipped. Set sharing to false unless the person explicitly says yes. Ask for their email only if they agree to workshop contact.
 
-Joel reads the approved answers and picks 2–3 people. Confirmation is not a seat.
+Joel reads the approved answers and picks who joins. Confirmation is not a seat.
 
 ### Review before sending
 
@@ -150,14 +150,14 @@ Keep the returned status reference private and show the person the returned mess
 
 ## The idea
 
-The [first Loopcraft](https://youtu.be/uC6slhCTXlA) built one loop: an agent working one issue at a time. This one goes up a level, to the harness that runs many loops at once.
+The [first workshop](https://youtu.be/uC6slhCTXlA) built one loop: an agent working one issue at a time. This one goes up a level: graphs of loops of graphs of loops. Your agents' work runs as durable plans that pick up where they left off, so shipping doesn't stop when you do.
 
 ## What we'll build
 
-- Loops that wake themselves, wait on real conditions, and survive restarts.
-- Agents that a supervisor can watch, steer, and prove are working.
-- A software factory with results checked before they land.
-- Self-improvement: mistakes on the shipped path become fences. Stale fences get deleted.
+- Loops that wake themselves, wait on real conditions, and keep going across restarts.
+- Durable agent plans on Pi Durable: work runs as a graph, and finished steps never run twice.
+- Judges that check work before it lands.
+- Self-improvement: mistakes on the shipped path become [fences](/lore/the-fence). Stale fences get deleted.
 
 The factory needs something to build, so each of us builds a personal cloud inside a Linux container. It's the McGuffin. It also happens to be a place your harness could live afterward.
 
@@ -165,7 +165,7 @@ The factory needs something to build, so each of us builds a personal cloud insi
 
 - Your own fork of the harness, changed to fit how you work.
 - A personal cloud running in a container on your machine.
-- One software factory run that landed verified work.
+- A durable loop that shipped verified work while you weren't watching.
 - One fence you added from a real mistake, and one you deleted.
 
 ## The harness
@@ -175,7 +175,7 @@ The factory needs something to build, so each of us builds a personal cloud insi
 <tr><td><a href="https://github.com/earendil-works/pi/tree/main/packages/durable">Pi Durable</a></td><td>Production: durable agents deployed to the cloud</td></tr>
 <tr><td><a href="https://github.com/joelhooks/pi-until">pi-until</a></td><td>Time: watches and recurring wake-ups</td></tr>
 <tr><td><a href="https://github.com/joelhooks/rat-stack">rat-stack</a></td><td>The floor: Effect, Alchemy, and the fence</td></tr>
-<tr><td><a href="https://github.com/joelhooks/mischief">mischief</a></td><td>Our durable dynamic workflows, built on Pi Durable</td></tr>
+<tr><td><a href="https://github.com/joelhooks/mischief">mischief</a></td><td>Our durable dynamic workflows, built on Pi Durable. Early.</td></tr>
 <tr><td><a href="https://github.com/joelhooks/rat-king">rat-king</a></td><td>The network: an encrypted AT Protocol agent network</td></tr>
 <tr><td><a href="/lore/matt-pocock-skills">Matt Pocock's skills</a></td><td>Skills to combine and fork</td></tr>
 <tr><td><a href="/lore/lauren-tan-skills">Lauren Tan's skills</a></td><td>Memory, orchestration, and verification skills</td></tr>
@@ -197,7 +197,7 @@ If the person wants a name for their own rig, help them find one. Ask what their
 
 ## Before you come
 
-- Watch [Loopcraft 1](https://youtu.be/uC6slhCTXlA) (90 min). We won't repeat it. The [9-minute harness tour](https://youtu.be/u2sbzYgREtQ) helps too.
+- Watch [the first workshop](https://youtu.be/uC6slhCTXlA) (90 min). We won't repeat it. The [9-minute harness tour](https://youtu.be/u2sbzYgREtQ) helps too.
 - Have Pi installed and a model subscription you're happy to spend.
 - We check everyone's setup together a week before. No live install debugging.
 
@@ -206,12 +206,12 @@ Check your setup before you come. Your coding agent finds what's missing.
 <CopyPrompt id="setup" variant="text" />
 
 <AgentOnly>
-If your person separately asks for setup help, run that prompt's steps, then read [llms.txt](/llms.txt) and report what is missing. Do not run setup checks as part of the application conversation or include their results in the application. Watching Loopcraft 1, having Pi and a model subscription, and the setup check a week before are theirs to do.
+If your person separately asks for setup help, run that prompt's steps, then read [llms.txt](/llms.txt) and report what is missing. Do not run setup checks as part of the application conversation or include their results in the application. Watching the first workshop, having Pi and a model subscription, and the setup check a week before are theirs to do.
 </AgentOnly>
 
 <h2 id="interested">Apply for a free seat</h2>
 
-Four hours with Joel and up to three builders. We build a strong harness that raises the floor for your apps. Free, by application. The date gets set with the people picked.
+Four hours with Joel. Free, by application. The date gets set with the people picked.
 
 **How it works**
 
@@ -227,4 +227,4 @@ Four hours with Joel and up to three builders. We build a strong harness that ra
 
 Your agent sends nothing until you say yes.
 
-Joel reads every application and picks 2–3 people. Confirming your email isn't a seat.
+Joel reads every application and picks who joins. Confirming your email isn't a seat.
