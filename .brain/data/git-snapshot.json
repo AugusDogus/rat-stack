@@ -141,7 +141,7 @@
     "packages/core/test/scoped-resource.test.ts": "b0c4ac286dc08e7df92a79ddd843bd570d8706a055babc8089c6b5bcd45c24a4",
     "packages/core/test/trace-export.test.ts": "1bf31a6930efabf5e596157fbade40fe6524b95c678d4c49e9bda0105ec2d1b3",
     "packages/database/src/postgres-migrations.ts": "5aae8abf0f5c02a1ad413dfb1f3eaa206d2158d7267ffdfa6e78b6fc6f6fa4bc",
-    "packages/deploy/src/checks.ts": "031c330895cec70ef8d9ef2c8004a135b68afb8f9b3f48c9249adea00e0d2d4c",
+    "packages/deploy/src/checks.ts": "e493db6b14ab4e5271f54ed8d6f29b0a3b1816838bfe34190f87aa27e7378101",
     "packages/deploy/test/fixtures/validated-http-response.ts": "350cae3012fc6a64c26fcb5316033f303a7d86c6f2f4aeb0a15e762340e39e3c",
     "packages/deploy/test/http-response.test.ts": "904a99c1ad1b49f11e8b2dd498fdf9ea2c5925d05da0491ac1d631c1fffc9e98",
     "packages/events/test/request-facts.test.ts": "fe995bad4b5c8f40b50cccd5463ded142ded8c98758d2a66562276a7f21cb956",

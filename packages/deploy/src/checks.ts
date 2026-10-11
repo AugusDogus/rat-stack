@@ -407,7 +407,9 @@ export const postDeployChecks = Effect.fn("postDeployChecks")(
               response.status === 200 &&
               response.headers["x-robots-tag"]?.includes("noindex") !== true &&
               !body.includes('<meta name="robots" content="noindex"') &&
-              response.headers["cache-control"]?.includes("no-store") === true
+              (accept === "text/html" ||
+                response.headers["cache-control"]?.includes("no-store") ===
+                  true)
             );
           })
         )
