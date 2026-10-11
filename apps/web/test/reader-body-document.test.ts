@@ -11,7 +11,7 @@ import {
 } from "../../site/scripts/reader-body-document.ts";
 import { readerCopyPrompts } from "../../site/scripts/reader-body-flags.ts";
 import { prepareReaderSiteInputs } from "../../site/scripts/reader-site-inputs.ts";
-import { ReaderNode } from "../src/client/reader-node.js";
+import { ReaderNode, ReaderNodeSchema } from "../src/client/reader-node.js";
 import type { ReaderNodeValue } from "../src/client/reader-node.js";
 import type { ReaderMessage } from "../src/client/reader/message.js";
 import { ClipboardAccess } from "../src/client/reader/model.js";
@@ -141,6 +141,41 @@ it.effect.prop(
 );
 
 it.effect(
+  "round trips responsive image selection, dimensions and alt through Foldkit",
+  () =>
+    Effect.gen(function* responsivePicture() {
+      const body = yield* compileReaderBody(
+        '<main><h1>Hero</h1><picture><source media="(max-width: 640px)" srcset="/portrait.svg 1x, /portrait-2x.svg 2x" width="600" height="1290" type="image/svg+xml"><img src="/landscape.svg" width="1200" height="720" alt="One Effect program" loading="lazy"></picture></main>',
+        "responsive hero"
+      );
+
+      const rendered = yield* renderToString(
+        {
+          Flags: Schema.Struct({ nodes: Schema.Array(ReaderNodeSchema) }),
+          init: (flags) => ({ commands: [], model: flags }),
+          view: (model, h: HtmlBuilder<ReaderMessage>) => ({
+            body: h.main(
+              [],
+              model.nodes.map((node) =>
+                renderReaderNode(node, h, () => h.span([], []))
+              )
+            ),
+            title: "Hero",
+          }),
+        },
+        { flags: { nodes: body.nodes }, isHydratable: false }
+      );
+
+      const roundTrip = yield* compileReaderBody(
+        rendered.html,
+        "rendered hero"
+      );
+
+      expect(normalize(roundTrip.nodes)).toEqual(normalize(body.nodes));
+    })
+);
+
+it.effect(
   "preserves the heading, breadcrumb and complete human body while removing only shared chrome",
   () =>
     Effect.gen(function* bodyProjection() {
@@ -203,7 +238,7 @@ it.effect(
   () =>
     Effect.gen(function* rejectedProjection() {
       const result = yield* compileReaderBody(
-        '<main><h1>Title</h1><unknown onclick="bad()"><script>bad()</script><p onmouseover="bad()">Body</p></unknown></main>',
+        '<main><h1>Title</h1><unknown onclick="bad()"><script>bad()</script><p onmouseover="bad()">Body</p></unknown><picture><source srcset="javascript:bad()"></picture></main>',
         "fixture"
       ).pipe(Effect.flip);
 
@@ -212,5 +247,8 @@ it.effect(
       expect(result.message).toContain("Unsupported attribute onclick");
       expect(result.message).toContain("Unsupported node script");
       expect(result.message).toContain("Unsupported attribute onmouseover");
+      expect(result.message).toContain(
+        "Unsupported srcset URL javascript:bad()"
+      );
     })
 );

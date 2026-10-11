@@ -97,14 +97,24 @@ export const compileReaderNodes = (
           return null;
         }
 
-        if (
-          (name === "href" || name === "src") &&
-          /^[a-z][a-z\d+.-]*:/iu.test(value) &&
-          !/^(?:https?:\/\/|mailto:)/u.test(value)
-        ) {
-          failures.push(
-            `Unsupported ${name} URL ${value}; use a public HTTP, relative, fragment or mailto link`
-          );
+        if (["href", "src", "srcset"].includes(name)) {
+          const urls =
+            name === "srcset"
+              ? value
+                  .split(",")
+                  .map((candidate) => candidate.trim().split(/\s+/u)[0] ?? "")
+              : [value];
+
+          for (const url of urls) {
+            if (
+              /^[a-z][a-z\d+.-]*:/iu.test(url) &&
+              !/^(?:https?:\/\/|mailto:)/u.test(url)
+            ) {
+              failures.push(
+                `Unsupported ${name} URL ${url}; use a public HTTP, relative, fragment or mailto link`
+              );
+            }
+          }
         }
 
         return { name, value };

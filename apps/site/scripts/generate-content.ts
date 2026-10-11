@@ -1983,6 +1983,19 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
       )
   ).toString("base64");
 
+  const infrastructureImages = yield* Effect.forEach(
+    ["landscape", "portrait"],
+    (orientation) =>
+      readText(
+        `apps/site/content/infrastructure-as-effects/${orientation}.svg`
+      ).pipe(
+        Effect.map((svg) => ({
+          base64: Buffer.from(svg).toString("base64"),
+          path: `/lore/infrastructure-as-effects/${orientation}.svg`,
+        }))
+      )
+  );
+
   const interestConfirmationEmail = yield* readText(
     "apps/site/content/tokenmaxx-confirmation-email.txt"
   );
@@ -2128,6 +2141,7 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
   const knownRoutes = new Set([
     tokenmaxxRoutePath,
     "/lore/cartridges/snes-sfam-cartridges.jpg",
+    ...infrastructureImages.map((image) => image.path),
     dillonPosterRoutePath,
     "/glossary",
     "/og/glossary.png",
@@ -2792,6 +2806,7 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
       unsubscribeBody,
       tokenmaxxImageJpegBase64,
       cartridgesImageJpegBase64,
+      ...infrastructureImages.map((image) => image.base64),
       dillonPosterJpegBase64,
       skillIndexMarkdown,
       skillIndexBodyHtml,
@@ -3362,6 +3377,7 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
           "/favicon.svg",
           "/tokenmaxx/four-comma-club.jpg",
           "/lore/cartridges/snes-sfam-cartridges.jpg",
+          ...infrastructureImages.map((image) => image.path),
           dillonPosterRoutePath,
         ],
         llmsLoreLinks,
@@ -3432,6 +3448,7 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
         base64: cartridgesImageJpegBase64,
         path: "/lore/cartridges/snes-sfam-cartridges.jpg",
       },
+      ...infrastructureImages,
       { base64: dillonPosterJpegBase64, path: dillonPosterRoutePath },
     ],
     pages: [

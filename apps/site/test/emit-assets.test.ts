@@ -10,6 +10,7 @@ import {
   cartridgesImageJpegBase64,
   dillonPosterJpegBase64,
   faviconIcoBase64,
+  fixtureBytes,
   appleTouchIconPngBase64,
   ratSvg,
   ogImages,
@@ -193,6 +194,14 @@ it.effect(
           base64: cartridgesImageJpegBase64,
           path: "/lore/cartridges/snes-sfam-cartridges.jpg",
         },
+        ...["landscape", "portrait"].map((orientation) => {
+          const imagePath = `/lore/infrastructure-as-effects/${orientation}.svg`;
+
+          return {
+            base64: fixtureBytes(imagePath).toString("base64"),
+            path: imagePath,
+          };
+        }),
         {
           base64: dillonPosterJpegBase64,
           path: "/lore/dependency-injection-is-the-reason-to-choose-effect/dillon-mulroy-di.jpg",

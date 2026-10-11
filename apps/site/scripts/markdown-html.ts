@@ -1026,7 +1026,10 @@ const collapseNodes = (
       node.children = collapseNodes(node.children, {
         parent: node.name,
         preserve:
-          context.preserve || node.name === "pre" || node.name === "textarea",
+          context.preserve ||
+          node.name === "pre" ||
+          node.name === "textarea" ||
+          node.name === "code",
         svg,
         svgText: context.svgText || (svg && node.name === "text"),
       });

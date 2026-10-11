@@ -338,6 +338,12 @@ figure {
   overflow-wrap: anywhere;
 }
 
+picture img {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
 figure img {
   border: 1px solid #ccd0da;
   display: block;
