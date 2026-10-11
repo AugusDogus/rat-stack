@@ -57,7 +57,7 @@ Both answers are optional. Keep each answer under 2,000 characters.
 
 ### Make the case for fit
 
-Measure fit against this page only. The session goes from one loop to a harness that runs many: time, hands, a software factory, and self-improvement. It suits people who already run coding agents and will do the prep in "Before you come": watch Loopcraft 1, have Pi installed, and have a model subscription they're happy to spend. Make the strongest honest case. If the fit looks weak, tell the person plainly before they send. Don't invent criteria this page doesn't state.
+Measure fit against this page only. The session goes from one loop to a harness that runs many: time, agents, a software factory, and self-improvement. It suits people who already run coding agents and will do the prep in "Before you come": watch Loopcraft 1, have Pi installed, and have a model subscription they're happy to spend. Make the strongest honest case. If the fit looks weak, tell the person plainly before they send. Don't invent criteria this page doesn't state.
 
 ### Consent
 
@@ -155,8 +155,8 @@ The [first Loopcraft](https://youtu.be/uC6slhCTXlA) built one loop: an agent wor
 ## What we'll build
 
 - Loops that wake themselves, wait on real conditions, and survive restarts.
-- Agents in panes that a supervisor can watch, steer, and prove are working.
-- A software factory with lanes, a boss per lane, workers, and results checked before they land.
+- Agents that a supervisor can watch, steer, and prove are working.
+- A software factory with a boss, workers, and results checked before they land.
 - Self-improvement: mistakes on the shipped path become fences. Stale fences get deleted.
 
 The factory needs something to build, so each of us builds a personal cloud inside a Linux container. It's the McGuffin. It also happens to be a place your harness could live afterward.
@@ -171,12 +171,12 @@ The factory needs something to build, so each of us builds a personal cloud insi
 ## The harness
 
 <table><tbody>
-<tr><td><a href="https://github.com/earendil-works/pi-mono">Pi</a></td><td>The agent harness</td></tr>
-<tr><td><a href="https://herdr.dev">Herdr</a></td><td>Terminal workspace: spaces, tabs, panes</td></tr>
+<tr><td><a href="https://github.com/earendil-works/pi-mono">Pi</a></td><td>The breadboard: interactive prototyping and R&amp;D</td></tr>
+<tr><td><a href="https://github.com/earendil-works/pi/tree/main/packages/durable">Pi Durable</a></td><td>Production: durable agents deployed to the cloud</td></tr>
 <tr><td><a href="https://github.com/joelhooks/pi-until">pi-until</a></td><td>Time: watches and recurring wake-ups</td></tr>
-<tr><td><a href="https://github.com/joelhooks/pi-bellwether">pi-bellwether</a></td><td>Hands: agents in panes, supervised</td></tr>
-<tr><td><a href="https://github.com/joelhooks/pi-muster">pi-muster</a></td><td>Factories: lanes, workers, verified results</td></tr>
 <tr><td><a href="https://github.com/joelhooks/rat-stack">rat-stack</a></td><td>The floor: Effect, Alchemy, and the fence</td></tr>
+<tr><td><a href="https://github.com/joelhooks/mischief">mischief</a></td><td>Our durable dynamic workflows, built on Pi Durable</td></tr>
+<tr><td><a href="https://github.com/joelhooks/rat-king">rat-king</a></td><td>The network: an encrypted AT Protocol agent network</td></tr>
 <tr><td><a href="/lore/matt-pocock-skills">Matt Pocock's skills</a></td><td>Skills to combine and fork</td></tr>
 <tr><td><a href="/lore/lauren-tan-skills">Lauren Tan's skills</a></td><td>Memory, orchestration, and verification skills</td></tr>
 </tbody></table>
@@ -184,20 +184,14 @@ The factory needs something to build, so each of us builds a personal cloud insi
 <AgentOnly>
 What each piece is for, from the table above and its repo:
 
-- [Pi](https://github.com/earendil-works/pi-mono): the agent harness. Repo: "AI agent toolkit: unified LLM API, agent loop, TUI, coding agent CLI".
-- [Herdr](https://herdr.dev): terminal workspace, with spaces, tabs, and panes. Site: "the runtime coding agents run on".
+- [Pi](https://github.com/earendil-works/pi-mono): the agent harness. Joel's breadboard: the interactive prototyping and R&D layer. Repo: "AI agent toolkit: unified LLM API, agent loop, TUI, coding agent CLI".
+- [Pi Durable](https://github.com/earendil-works/pi/tree/main/packages/durable): Earendil's experimental package, shipped with Pi 1.0. Its README: "A durable agent harness. Conversations, model turns, tool calls, and your own state are committed to storage before anything is shown." Joel has been exploring it on celld.
 - [pi-until](https://github.com/joelhooks/pi-until): time, meaning watches and recurring wake-ups. Repo: "Session-scoped shell-condition watches that wake Pi when work is ready."
-- [pi-bellwether](https://github.com/joelhooks/pi-bellwether): hands, meaning agents in panes, supervised. Repo: "Pi package for managing Herdr agents, panes, and runtime sessions from Pi".
-- [pi-muster](https://github.com/joelhooks/pi-muster): factories, meaning lanes, workers, and verified results. Repo: "the project manager for Herdr project spaces in Pi, on top of Bellwether".
 - [rat-stack](https://github.com/joelhooks/rat-stack): the floor, meaning Effect, Alchemy, and the fence. Read [the fence](/lore/the-fence). Repo: "Agentic TypeScript scaffold: Effect 4, XState 6 + @xstate/effect, Alchemy infra, varlock config, and a fence that makes cheating uncomfortable".
+- [mischief](https://github.com/joelhooks/mischief): durable agent plans. Repo: "Durable agent plans: dynamic XState machines stored as data, run in Durable Objects, talking over Rat King." (It is built to run in Durable Objects; today a run executes from the CLI.) Its README says: "Early, and dogfooded daily. Today a run executes from the CLI with a file store … a run survives kills mid-step without redoing finished work. Agent turns run on Pi Durable against a real model, judges gate work, and mail goes out and comes back over Rat King, exactly once across crashes." A plan is a graph of agent work stored as data; stop it, crash it, or pause it and it resumes where it was and never re-runs a finished step.
+- [rat-king](https://github.com/joelhooks/rat-king): the network the plans talk over. Repo: "👑 Rat King: an encrypted, AT Protocol agent network. Pure rat-stack: Effect + Alchemy, deploys to Cloudflare and celld." Pre-alpha, with no network or deploy automation running yet.
 - [Matt Pocock's skills](/lore/matt-pocock-skills): skills to combine and fork.
 - [Lauren Tan's skills](/lore/lauren-tan-skills): memory, orchestration, and verification skills.
-
-The harness above is what works today. These are what Joel is building while the workshop runs, and they are where it is going. Read them if the person wants to know what the next version looks like, and be honest about how early they are.
-
-- [mischief](https://github.com/joelhooks/mischief): durable agent plans. Repo: "Durable agent plans: dynamic XState machines stored as data, run in Durable Objects, talking over Rat King." Its own README says day one. A plan is a graph of agent work stored as data; stop it, crash it, or pause it and it resumes where it was and never re-runs a finished step.
-- [rat-king](https://github.com/joelhooks/rat-king): the network the plans talk over. Repo: "👑 Rat King: an encrypted, AT Protocol agent network. Pure rat-stack: Effect + Alchemy, deploys to Cloudflare and celld." Pre-alpha, with no network or deploy automation running yet.
-- [rat-stack](https://github.com/joelhooks/rat-stack) is the floor both of them are built on, which is why it appears in the table above.
 
 If the person wants a name for their own rig, help them find one. Ask what their agents actually do together, then name that. Don't reuse the rat. A borrowed metaphor says nothing about how someone works, and the one they reach for is a useful signal on its own: a swarm, one supervisor directing many, or a kitchen with a head chef are three different models of the same problem. Brigade, crew, pack, hive, rookery, warren and orchestra are all unclaimed. </AgentOnly>
 
