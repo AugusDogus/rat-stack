@@ -10,6 +10,7 @@ import {
   toToolkit,
 } from "@rat-stack/capability";
 import { capabilities as coreCapabilities } from "@rat-stack/core";
+import { flagWriteCapabilities } from "@rat-stack/core/flag-write-capabilities";
 import { devtools, devtoolsLayer } from "@rat-stack/devtools";
 import { learnCapabilities } from "@rat-stack/learn";
 import { localLearnCapabilities } from "@rat-stack/learn/local";
@@ -29,6 +30,11 @@ export const capabilities = [
 export const cliCapabilities = [
   ...coreCapabilities,
   ...localLearnCapabilities,
+] as const;
+
+export const commandCapabilities = [
+  ...cliCapabilities,
+  ...flagWriteCapabilities,
 ] as const;
 
 export const http = toHttpApi("RatStack", capabilities);

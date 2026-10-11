@@ -8,7 +8,11 @@ import {
   Schema,
 } from "effect";
 
+import { flagControlDefaults } from "./flag-control.js";
+import type { FlagStorageError } from "./flag-storage-error.js";
 import { InvalidFlagValue } from "./invalid-flag-value.js";
+
+export { FlagStorageError } from "./flag-storage-error.js";
 
 export { InvalidFlagValue } from "./invalid-flag-value.js";
 
@@ -75,15 +79,18 @@ export class Flags extends Context.Service<
     readonly get: <A>(
       flag: Flag<A>,
       context: FlagContext
-    ) => Effect.Effect<A, InvalidFlagValue>;
+    ) => Effect.Effect<A, InvalidFlagValue | FlagStorageError>;
     readonly registry: readonly Flag<unknown>[];
   }
 >()("@rat-stack/core/Flags") {
   static defaults = (registry: readonly Flag<unknown>[]) =>
-    Layer.succeed(Flags, {
-      get: (flag) => decodeFlag(flag)(flag.default),
-      registry,
-    });
+    Layer.merge(
+      Layer.succeed(Flags, {
+        get: (flag) => decodeFlag(flag)(flag.default),
+        registry,
+      }),
+      flagControlDefaults
+    );
 }
 
 export const eventsEnabled = defineFlag("EVENTS_ENABLED", Schema.Boolean, {

@@ -1,9 +1,11 @@
+import { Flags } from "@rat-stack/core/flags";
 import * as Cloudflare from "alchemy/Cloudflare";
 import * as Effect from "effect/Effect";
 import * as HttpServerRequest from "effect/http/HttpServerRequest";
 import * as HttpServerResponse from "effect/http/HttpServerResponse";
 import * as Layer from "effect/Layer";
 
+import { liveFlagsLayer } from "../flags.js";
 import { layerWorkerLoader, sandboxLimits } from "../sandbox-loader.js";
 import type { WorkerLoaderBinding } from "../sandbox-worker-loader.js";
 import { workerAssetsLayer } from "../worker-content.js";
@@ -26,11 +28,14 @@ export default class LegacyMcp extends Cloudflare.DurableObject<LegacyMcp>()(
 
     const state = yield* Cloudflare.DurableObjectState;
 
+    const flags = yield* Flags.pipe(Effect.provide(liveFlagsLayer));
+
     const forward = yield* legacyMcpRuntime(
       Layer.merge(
         layerWorkerLoader(bindings.CODE_SANDBOX, sandboxLimits),
         workerAssetsLayer
-      )
+      ),
+      flags
     );
 
     // @effect-diagnostics-next-line returnEffectInGen:off -- Alchemy's DurableObject contract returns the per-instance Effect.

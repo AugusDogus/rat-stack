@@ -39,7 +39,7 @@ import { mischiefConfigFingerprint } from "./config-fingerprint.js";
 import { ContentStore } from "./content-store.js";
 import CrashTail from "./crash-tail.js";
 import { ErrorPageRenderer, websiteErrorPages } from "./error-page-renderer.js";
-import { flagsLayer } from "./flags.js";
+import { flagsLayer, liveFlagsLayer } from "./flags.js";
 import { intakeApplicationsLayer } from "./interest/applications.js";
 import { interestDirectoryLayer } from "./interest/directory.js";
 import Interest from "./interest/interest-durable-object.js";
@@ -85,7 +85,8 @@ export const makeMischief = (
   interestDirectory: Layer.Layer<InterestDirectory>,
   events?: Context.Context<EventSink | VisitorSalt>,
   agentSignup?: AgentSignupOptions,
-  feedback?: ReturnType<typeof feedbackAccess>
+  feedback?: ReturnType<typeof feedbackAccess>,
+  liveFlags?: Flags["Service"]
 ) =>
   Effect.gen(function* makeMischiefInit() {
     if (globalThis.__ALCHEMY_RUNTIME__ !== true) {
@@ -280,6 +281,7 @@ export const makeMischief = (
       assets,
       contentStore,
       feedback,
+      flags: liveFlags,
       interest:
         interest === undefined
           ? undefined
@@ -323,11 +325,27 @@ export const makeMischief = (
       fetch: observeRequestIncidents(
         events === undefined
           ? readerApp
-          : withEventCapture({
-              captureCity: true,
-              identityMode,
-              runInBackground: inBackground,
-            })(readerApp).pipe(Effect.provideContext(events))
+          : Effect.gen(function* captureWithLiveIdentity() {
+              const currentIdentity =
+                liveFlags === undefined
+                  ? identityMode
+                  : yield* liveFlags
+                      .get(eventsIdentityMode, {})
+                      .pipe(
+                        Effect.catch((error) =>
+                          Effect.logError(
+                            "Flag read failed; using Config fallback.",
+                            error
+                          ).pipe(Effect.andThen(Effect.succeed(identityMode)))
+                        )
+                      );
+
+              return yield* withEventCapture({
+                captureCity: true,
+                identityMode: currentIdentity,
+                runInBackground: inBackground,
+              })(readerApp).pipe(Effect.provideContext(events));
+            })
       ),
     };
   });
@@ -338,6 +356,7 @@ const makeMischiefWorker = Effect.gen(function* makeMischiefWorker() {
   }
 
   const feedback = (yield* feedbackInfrastructure).pipe(Option.getOrUndefined);
+  const liveFlags = yield* Flags.pipe(Effect.provide(liveFlagsLayer));
 
   const legacyMcp = yield* LegacyMcp;
   const interests = yield* Interest;
@@ -401,7 +420,8 @@ const makeMischiefWorker = Effect.gen(function* makeMischiefWorker() {
     ),
     events,
     agentSignup,
-    feedback
+    feedback,
+    liveFlags
   );
 }).pipe(
   Effect.provide(

@@ -1,3 +1,4 @@
+import PreviewRpcBackend from "@rat-stack/site/preview-rpc-worker";
 import RpcBackend from "@rat-stack/site/rpc-worker";
 import * as Cloudflare from "alchemy/Cloudflare";
 import { Stage } from "alchemy/Stage";
@@ -31,7 +32,7 @@ export class Website extends Cloudflare.Website.Foldkit<Website>()(
           "/prompts/*",
         ],
       },
-      env: { BACKEND: RpcBackend },
+      env: { BACKEND: preview ? PreviewRpcBackend : RpcBackend },
       observability: traceObservability(traces),
       rootDir: "../web",
       workersDev: false,
