@@ -1,5 +1,24 @@
 [
   {
+    "url": "https://github.com/humanlayer/effect-channels",
+    "title": "HumanLayer Channels",
+    "summary": "Durable, ordered webhook mailboxes that put agents in Slack, GitHub and Linear without losing a message, built on Effect 4.",
+    "date": "2026-10-10",
+    "repo": "humanlayer/effect-channels",
+    "author": {
+      "github": "humanlayer",
+      "x": null
+    },
+    "stack": {
+      "cloudflare": "packages/alchemy-cloudflare stores mailboxes in Cloudflare Durable Objects",
+      "alchemy": "packages/alchemy-cloudflare/package.json depends on alchemy",
+      "foldkit": null,
+      "effect": "packages/alchemy-cloudflare/package.json depends on effect"
+    },
+    "stars": 40,
+    "source": "https://github.com/humanlayer/effect-channels"
+  },
+  {
     "url": "https://github.com/Effect-TS/cafe",
     "title": "cafe",
     "summary": "A minimal chat app built with the CAFE stack, tested by agents against real Cloudflare.",
