@@ -9,6 +9,7 @@ import type {
   ContentMetadata,
 } from "./content-data.js";
 import { markdownDiscoveryLinks } from "./content-links.js";
+import { tokenmaxxTitle } from "./house-ad-copy.js";
 import { canonicalMarkdownLinks } from "./markdown-links.js";
 
 export {
@@ -130,7 +131,7 @@ curl --request POST '${origin}/api/execute' \\
 # {"diagnostic":null,"logs":[],"result":2,"toolCalls":[],"truncated":false}
 \`\`\`
 
-${agentNextActions(origin)}
+${agentNextActions(origin, tokenmaxxTitle)}
 ## Source files
 
 ${entryList(catalog.resources.filter((resource) => resource.kind === "law"))}

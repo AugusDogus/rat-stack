@@ -33,6 +33,7 @@ import {
   contentCapabilities,
   executeProjection,
 } from "../src/capabilities/index.js";
+import { tokenmaxxTitle } from "../src/house-ad-copy.js";
 import {
   interestCapabilities,
   registerInterest,
@@ -250,9 +251,9 @@ it.effect(
         expect(llmsText("https://ratstack.sh")).not.toContain(
           "registerInterest"
         );
-        expect(agentNextActions("https://ratstack.sh")).not.toContain(
-          "registerInterest"
-        );
+        expect(
+          agentNextActions("https://ratstack.sh", tokenmaxxTitle)
+        ).not.toContain("registerInterest");
         expect(llmsText("https://ratstack.sh")).not.toContain(
           "browser submission"
         );
@@ -641,7 +642,7 @@ const tokenmaxxPage = (handler: WebHandler, accept: string) =>
   );
 
 const setupPromptLines = [
-  'Check my setup for the "Loops That Never Stop Shipping: Tokenmaxxing Efficiently" session.',
+  `Check my setup for the "${tokenmaxxTitle}" session.`,
   "1. Check that Docker is running (Docker Desktop or OrbStack).",
   "2. Create a private repo from the joelhooks/rat-stack template and clone it: gh repo create my-factory --private --template joelhooks/rat-stack",
   "3. Read https://ratstack.sh/llms.txt",
@@ -741,9 +742,7 @@ it.effect(
         const markdown = yield* text(response);
 
         expect(response.headers.get("content-type")).toContain("text/markdown");
-        expect(markdown).toContain(
-          "# Loops That Never Stop Shipping: Tokenmaxxing Efficiently"
-        );
+        expect(markdown).toContain(`# ${tokenmaxxTitle}`);
         expect(markdown).not.toContain("<form");
       })
     )
@@ -785,15 +784,13 @@ it.effect(
         const link = linkIn(mail?.text ?? "");
 
         expect(mail?.from).toBe("workshop@ratstack.sh");
-        expect(mail?.subject).toBe(
-          "Confirm: Loops That Never Stop Shipping: Tokenmaxxing Efficiently"
-        );
+        expect(mail?.subject).toBe(`Confirm: ${tokenmaxxTitle}`);
         expect(mail?.to).toBe("reader@example.com");
         expect(link).not.toBe("");
         expect(mail?.text).toBe(
           `Hi,
 
-You asked to hear about "Loops That Never Stop Shipping: Tokenmaxxing Efficiently," a four-hour workshop on agent harnesses at ratstack.sh.
+You asked to hear about "${tokenmaxxTitle}," a four-hour workshop on agent harnesses at ratstack.sh.
 
 Confirm your email:
 ${link}
@@ -990,7 +987,7 @@ it.effect("renders the four confirm pages with the approved copy", () =>
 
       expect(pending).toContain("<h1>Confirm your email</h1>");
       expect(pending).toContain(
-        '<p>You asked to hear about "Loops That Never Stop Shipping: Tokenmaxxing Efficiently," a four-hour workshop on agent harnesses at ratstack.sh. Confirm your email to get one email when the date is set, and that\'s it.</p>'
+        `<p>You asked to hear about "${tokenmaxxTitle}," a four-hour workshop on agent harnesses at ratstack.sh. Confirm your email to get one email when the date is set, and that's it.</p>`
       );
       expect(pending).toContain(
         '<button type="submit">Confirm my email</button>'

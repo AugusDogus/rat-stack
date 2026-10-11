@@ -1,6 +1,8 @@
+export const tokenmaxxTitle = "Build Agent Loops That Never Stop Shipping";
+
 export const houseAdCopy = {
   href: "/tokenmaxx#interested",
   label: "Free workshop",
-  line: "Loops That Never Stop Shipping: Tokenmaxxing Efficiently",
+  line: tokenmaxxTitle,
   link: "Apply today",
 } as const;

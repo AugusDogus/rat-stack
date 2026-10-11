@@ -1,12 +1,10 @@
-# Loops That Never Stop Shipping: Tokenmaxxing Efficiently
+# {{TOKENMAXX_TITLE}}
 
-Burning tokens is easy. Almost all of it is agents re-reading context. Landing good work is the hard part. This session builds the loops that keep landing it. <CopyPrompt id="page" audience="agent" />
+You start an agent, it does something, you check it, you start it again. That's one loop, and you're the scheduler. In this workshop you'll build the loops that run without you. <CopyPrompt id="page" audience="agent" />
 
 _A four-hour working session with Joel Hooks._
 
 Free, by application.
-
-In honor of [Lauren Tan](https://x.com/poteto), who [joined the four comma club](https://x.com/poteto/status/2104714676978479423) with 1.3 trillion tokens in one month.
 
 <HumanOnly>
 - Read the [workshop page](https://ratstack.sh/tokenmaxx) with your agent.
@@ -57,7 +55,7 @@ Both answers are optional. Keep each answer under 2,000 characters.
 
 ### Make the case for fit
 
-Measure fit against this page only. The session goes from one loop to a harness that runs many: time, agents, a software factory, and self-improvement. It suits people who already run coding agents and will do the prep in "Before you come": watch the first workshop, have Pi installed, and have a model subscription they're happy to spend. Make the strongest honest case. If the fit looks weak, tell the person plainly before they send. Don't invent criteria this page doesn't state.
+Measure fit against this page only. The session goes from one loop to loops that run many: time, agents, a software factory, and self-improvement. It suits people who already run coding agents and will do the prep in "Before you come": watch the first workshop, have Pi installed, and have a model subscription they're happy to spend. Make the strongest honest case. If the fit looks weak, tell the person plainly before they send. Don't invent criteria this page doesn't state.
 
 ### Consent
 
@@ -141,13 +139,6 @@ Keep the returned status reference private and show the person the returned mess
 
 </AgentOnly>
 
-<HumanOnly>
-<figure>
-<a href="https://x.com/poteto/status/2104714676978479423"><img src="/tokenmaxx/four-comma-club.jpg" width="1400" height="1043" alt="Lauren Tan (@poteto) on X, Sep 28, 2026: 'this month i joined the four comma club', with a chart showing 1.3T tokens from Aug 30 to today." /></a>
-<figcaption><a href="https://x.com/poteto/status/2104714676978479423">@poteto on X, Sep 28, 2026</a></figcaption>
-</figure>
-</HumanOnly>
-
 ## The idea
 
 The [first workshop](https://youtu.be/uC6slhCTXlA) built one loop: an agent working one issue at a time. This one goes up a level: graphs of loops of graphs of loops. Your agents' work runs as durable plans that pick up where they left off, so shipping doesn't stop when you do.
@@ -159,16 +150,18 @@ The [first workshop](https://youtu.be/uC6slhCTXlA) built one loop: an agent work
 - Judges that check work before it lands.
 - Self-improvement: mistakes on the shipped path become [fences](/lore/the-fence). Stale fences get deleted.
 
-The factory needs something to build, so each of us builds a personal cloud inside a Linux container. It's the McGuffin. It also happens to be a place your harness could live afterward.
+The factory needs something to build, so each of us builds a personal cloud inside a Linux container. It's the McGuffin. It also happens to be a place your loops could live afterward.
 
-## What you leave with
+## Working prototypes you'll leave with
 
-- Your own fork of the harness, changed to fit how you work.
+- Your own agent loops, built to fit how you work.
 - A personal cloud running in a container on your machine.
 - A durable loop that shipped verified work while you weren't watching.
 - One fence you added from a real mistake, and one you deleted.
 
-## The harness
+## Reference: the stack Joel uses
+
+Read these for context. You'll build your own.
 
 <table><tbody>
 <tr><td><a href="https://github.com/earendil-works/pi-mono">Pi</a></td><td>The breadboard: interactive prototyping and R&amp;D</td></tr>
@@ -182,7 +175,7 @@ The factory needs something to build, so each of us builds a personal cloud insi
 </tbody></table>
 
 <AgentOnly>
-What each piece is for, from the table above and its repo:
+What each reference piece is for, from the table above and its repo. The person builds their own loops; these are context, not a kit to fork:
 
 - [Pi](https://github.com/earendil-works/pi-mono): the agent harness. Joel's breadboard: the interactive prototyping and R&D layer. Repo: "AI agent toolkit: unified LLM API, agent loop, TUI, coding agent CLI".
 - [Pi Durable](https://github.com/earendil-works/pi/tree/main/packages/durable): Earendil's experimental package, shipped with Pi 1.0. Its README: "A durable agent harness. Conversations, model turns, tool calls, and your own state are committed to storage before anything is shown." Joel has been exploring it on celld.
@@ -197,7 +190,7 @@ If the person wants a name for their own rig, help them find one. Ask what their
 
 ## Before you come
 
-- Watch [the first workshop](https://youtu.be/uC6slhCTXlA) (90 min). We won't repeat it. The [9-minute harness tour](https://youtu.be/u2sbzYgREtQ) helps too.
+- Watch [the first workshop](https://youtu.be/uC6slhCTXlA) (90 min). We won't repeat it.
 - Have Pi installed and a model subscription you're happy to spend.
 - We check everyone's setup together a week before. No live install debugging.
 

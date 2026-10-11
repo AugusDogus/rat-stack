@@ -1,9 +1,9 @@
 From: workshop@ratstack.sh
-Subject: Confirm: Loops That Never Stop Shipping: Tokenmaxxing Efficiently
+Subject: Confirm: {{TOKENMAXX_TITLE}}
 
 Hi,
 
-You asked to hear about "Loops That Never Stop Shipping: Tokenmaxxing Efficiently," a four-hour workshop on agent harnesses at ratstack.sh.
+You asked to hear about "{{TOKENMAXX_TITLE}}," a four-hour workshop on agent harnesses at ratstack.sh.
 
 Confirm your email:
 {confirm_link}
