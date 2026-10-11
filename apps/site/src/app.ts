@@ -17,6 +17,7 @@ import * as McpServer from "effect/ai/McpServer";
 import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
 import * as HttpApiSchema from "effect/http-api/HttpApiSchema";
 import * as HttpHeaders from "effect/http/Headers";
+import * as HttpEffect from "effect/http/HttpEffect";
 import * as HttpRouter from "effect/http/HttpRouter";
 import * as HttpServerRequest from "effect/http/HttpServerRequest";
 import * as HttpServerResponse from "effect/http/HttpServerResponse";
@@ -556,7 +557,6 @@ export const tokenmaxxResponse = Effect.gen(function* tokenmaxxPage() {
     headers: {
       "cache-control": "no-store",
       vary: "Accept",
-      "x-robots-tag": "noindex",
     },
   });
 });
@@ -1110,6 +1110,15 @@ const securityHeadersMiddleware = HttpRouter.middleware(
     httpEffect.pipe(
       Effect.map((response) =>
         secureResponse(response, contentSecurityPolicy("'none'"))
+      ),
+      HttpEffect.withPreResponseHandler((request, response) =>
+        Effect.succeed(
+          new URL(request.url, "https://ratstack.sh").pathname.startsWith(
+            "/tokenmaxx/"
+          )
+            ? HttpServerResponse.setHeader(response, "x-robots-tag", "noindex")
+            : response
+        )
       )
     ),
   { global: true }

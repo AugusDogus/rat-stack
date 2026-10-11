@@ -71,6 +71,23 @@ for route in "${routes[@]}"; do
   printf '%s %s\n' "$status" "$route"
 done
 
+for accept in text/html text/markdown; do
+  curl --fail --silent --show-error --max-time 20 --header "accept: $accept" \
+    --dump-header "$tmp_dir/workshop.headers" --output "$tmp_dir/workshop.body" "${base_url}/tokenmaxx"
+  if grep -Eiq '^x-robots-tag:.*noindex' "$tmp_dir/workshop.headers" || grep -Fq '<meta name="robots" content="noindex"' "$tmp_dir/workshop.body"; then
+    fail "workshop $accept is noindex"
+  fi
+  grep -Eiq '^cache-control:.*no-store' "$tmp_dir/workshop.headers" || fail "workshop $accept lost no-store"
+  printf 'workshop indexable: %s\n' "$accept"
+done
+curl --fail --silent --show-error --max-time 20 "${base_url}/sitemap.xml" >"$tmp_dir/sitemap.xml"
+grep -Fq "<loc>${base_url}/tokenmaxx</loc>" "$tmp_dir/sitemap.xml" || fail "workshop missing from sitemap"
+for route in '/tokenmaxx/confirm?token=invalid' '/tokenmaxx/unsubscribe?token=invalid' /tokenmaxx/interest /tokenmaxx/four-comma-club.jpg; do
+  curl --silent --show-error --max-time 20 --dump-header "$tmp_dir/transaction.headers" --output /dev/null "${base_url}${route}"
+  grep -Eiq '^x-robots-tag:.*noindex' "$tmp_dir/transaction.headers" || fail "$route lost noindex"
+  printf 'workshop noindex: %s\n' "$route"
+done
+
 curl --fail --silent --show-error --request POST "${base_url}/mcp" \
   --header 'accept: application/json, text/event-stream' --header 'content-type: application/json' \
   --header 'MCP-Protocol-Version: 2026-07-28' --header 'Mcp-Method: tools/list' \

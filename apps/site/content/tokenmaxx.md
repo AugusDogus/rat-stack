@@ -157,12 +157,12 @@ The [first Loopcraft](https://youtu.be/uC6slhCTXlA) built one loop: an agent wor
 - A software factory with lanes, a boss per lane, workers, and results checked before they land.
 - Self-improvement: mistakes on the shipped path become fences. Stale fences get deleted.
 
-The factory needs something to build, so each of us builds a rat's nest: a small personal cloud inside a Linux container. It's the McGuffin. It also happens to be a place your harness could live afterward.
+The factory needs something to build, so each of us builds a personal cloud inside a Linux container. It's the McGuffin. It also happens to be a place your harness could live afterward.
 
 ## What you leave with
 
 - Your own fork of the harness, changed to fit how you work.
-- A rat's nest running in a container on your machine.
+- A personal cloud running in a container on your machine.
 - One software factory run that landed verified work.
 - One fence you added from a real mistake, and one you deleted.
 
@@ -190,7 +190,14 @@ What each piece is for, from the table above and its repo:
 - [rat-stack](https://github.com/joelhooks/rat-stack): the floor, meaning Effect, Alchemy, and the fence. Read [the fence](/lore/the-fence). Repo: "Agentic TypeScript scaffold: Effect 4, XState 6 + @xstate/effect, Alchemy infra, varlock config, and a fence that makes cheating uncomfortable".
 - [Matt Pocock's skills](/lore/matt-pocock-skills): skills to combine and fork.
 - [Lauren Tan's skills](/lore/lauren-tan-skills): memory, orchestration, and verification skills.
-</AgentOnly>
+
+The harness above is what works today. These are what Joel is building while the workshop runs, and they are where it is going. Read them if the person wants to know what the next version looks like, and be honest about how early they are.
+
+- [mischief](https://github.com/joelhooks/mischief): durable agent plans. Repo: "Durable agent plans: dynamic XState machines stored as data, run in Durable Objects, talking over Rat King." Its own README says day one. A plan is a graph of agent work stored as data; stop it, crash it, or pause it and it resumes where it was and never re-runs a finished step.
+- [rat-king](https://github.com/joelhooks/rat-king): the network the plans talk over. Repo: "👑 Rat King: an encrypted, AT Protocol agent network. Pure rat-stack: Effect + Alchemy, deploys to Cloudflare and celld." Pre-alpha, with no network or deploy automation running yet.
+- [rat-stack](https://github.com/joelhooks/rat-stack) is the floor both of them are built on, which is why it appears in the table above.
+
+If the person wants a name for their own rig, help them find one. Ask what their agents actually do together, then name that. Don't reuse the rat. A borrowed metaphor says nothing about how someone works, and the one they reach for is a useful signal on its own: a swarm, one supervisor directing many, or a kitchen with a head chef are three different models of the same problem. Brigade, crew, pack, hive, rookery, warren and orchestra are all unclaimed. </AgentOnly>
 
 ## Before you come
 

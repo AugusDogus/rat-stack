@@ -392,6 +392,64 @@ export const postDeployChecks = Effect.fn("postDeployChecks")(
       );
     }
 
+    for (const accept of ["text/html", "text/markdown"]) {
+      verdicts.push(
+        yield* measuredCheck(
+          `tokenmaxx-indexable:${accept}`,
+          Effect.gen(function* workshopIndexability() {
+            const response = yield* client.get(`${url}/tokenmaxx`, {
+              headers: { accept },
+            });
+
+            const body = yield* response.text;
+
+            return (
+              response.status === 200 &&
+              response.headers["x-robots-tag"]?.includes("noindex") !== true &&
+              !body.includes('<meta name="robots" content="noindex"') &&
+              response.headers["cache-control"]?.includes("no-store") === true
+            );
+          })
+        )
+      );
+    }
+
+    verdicts.push(
+      yield* measuredCheck(
+        "tokenmaxx-sitemap",
+        Effect.gen(function* workshopSitemap() {
+          const response = yield* client.get(`${url}/sitemap.xml`);
+          const body = yield* response.text;
+
+          return (
+            response.status === 200 &&
+            body.includes(`<loc>${url}/tokenmaxx</loc>`)
+          );
+        })
+      )
+    );
+
+    for (const route of [
+      "/tokenmaxx/confirm?token=invalid",
+      "/tokenmaxx/unsubscribe?token=invalid",
+      "/tokenmaxx/interest",
+      "/tokenmaxx/four-comma-club.jpg",
+    ]) {
+      verdicts.push(
+        yield* measuredCheck(
+          `tokenmaxx-noindex:${route}`,
+          client
+            .get(`${url}${route}`)
+            .pipe(
+              Effect.map(
+                (response) =>
+                  response.headers["x-robots-tag"]?.includes("noindex") === true
+              )
+            )
+        )
+      );
+    }
+
     const post = (
       route: string,
       json: string,

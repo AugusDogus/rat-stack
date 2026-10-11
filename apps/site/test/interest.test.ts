@@ -147,7 +147,7 @@ it.effect(
       Effect.gen(function* applicationViews() {
         const response = yield* getView(handler, "/tokenmaxx", "text/markdown");
         expect(response.status).toBe(200);
-        expect(response.headers.get("x-robots-tag")).toBe("noindex");
+        expect(response.headers.get("x-robots-tag")).toBeNull();
         expect(response.headers.get("cache-control")).toBe("no-store");
 
         for (const [view, text] of [
@@ -383,12 +383,14 @@ it.effect(
 );
 
 it.effect(
-  "keeps the workshop out of the sitemap and its screenshot available",
+  "lists the workshop in the sitemap and keeps its screenshot noindex",
   () =>
     withInterest((handler) =>
       Effect.gen(function* workshopDiscovery() {
-        expect(publicPaths).not.toContain("/tokenmaxx");
-        expect(sitemapXml("https://ratstack.sh")).not.toContain("/tokenmaxx");
+        expect(publicPaths).toContain("/tokenmaxx");
+        expect(sitemapXml("https://ratstack.sh")).toContain(
+          "<loc>https://ratstack.sh/tokenmaxx</loc>"
+        );
 
         const screenshot = yield* getView(
           handler,
@@ -396,6 +398,7 @@ it.effect(
         );
 
         expect(screenshot.status).toBe(200);
+        expect(screenshot.headers.get("x-robots-tag")).toBe("noindex");
         expect(screenshot.headers.get("content-type")).toBe("image/jpeg");
       })
     )
@@ -646,7 +649,7 @@ const setupPromptLines = [
 ];
 
 it.effect(
-  "keeps the workshop page unlisted and noindex, with an agent application button",
+  "makes the workshop page indexable with an agent application button",
   () =>
     withLiveInterest((handler) =>
       Effect.gen(function* servesPage() {
@@ -654,8 +657,9 @@ it.effect(
         const html = generatedTokenmaxxPage;
 
         expect(response.status).toBe(200);
-        expect(response.headers.get("x-robots-tag")).toBe("noindex");
-        expect(html).toContain('<meta name="robots" content="noindex"');
+        expect(response.headers.get("x-robots-tag")).toBeNull();
+        expect(response.headers.get("cache-control")).toBe("no-store");
+        expect(html).not.toContain('<meta name="robots" content="noindex"');
         expect(html).not.toContain("<form");
         expect(html).toContain(
           '<h2 id="interested">Apply for a free seat</h2>'
@@ -666,11 +670,13 @@ it.effect(
 );
 
 it.effect(
-  "keeps the workshop page out of the sitemap, search, and lore index with an agent-guide pointer",
+  "lists the workshop in the sitemap while retaining its agent-guide pointer",
   () =>
     Effect.sync(() => {
-      expect(publicPaths).not.toContain("/tokenmaxx");
-      expect(sitemapXml("https://ratstack.sh")).not.toContain("tokenmaxx");
+      expect(publicPaths).toContain("/tokenmaxx");
+      expect(sitemapXml("https://ratstack.sh")).toContain(
+        "<loc>https://ratstack.sh/tokenmaxx</loc>"
+      );
       expect(llmsText("https://ratstack.sh")).toContain(
         "https://ratstack.sh/tokenmaxx#interested"
       );
@@ -680,6 +686,44 @@ it.effect(
         )
       ).not.toContain("/tokenmaxx");
     })
+);
+
+it.effect("indexes the workshop pathname and hides only its subpaths", () =>
+  withLiveInterest((handler) =>
+    Effect.gen(function* transactionalIndexing() {
+      for (const path of [
+        "/tokenmaxx",
+        "/tokenmaxx?utm=x",
+        "/tokenmaxx#interested",
+      ]) {
+        const response = yield* call(
+          handler,
+          new Request(`https://ratstack.sh${path}`, {
+            headers: { accept: "text/markdown" },
+          })
+        );
+
+        expect(response.status, path).toBe(200);
+        expect(response.headers.get("x-robots-tag"), path).toBeNull();
+      }
+
+      for (const path of [
+        "/tokenmaxx/",
+        "/tokenmaxx/confirm?token=invalid",
+        "/tokenmaxx/unsubscribe?token=invalid",
+        "/tokenmaxx/interest",
+        "/tokenmaxx/four-comma-club.jpg",
+        "/tokenmaxx/unknown",
+      ]) {
+        const response = yield* call(
+          handler,
+          new Request(`https://ratstack.sh${path}`)
+        );
+
+        expect(response.headers.get("x-robots-tag"), path).toBe("noindex");
+      }
+    })
+  )
 );
 
 it.effect(

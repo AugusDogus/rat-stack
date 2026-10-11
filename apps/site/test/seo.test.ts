@@ -129,13 +129,20 @@ it.effect(
         }
       }
 
-      for (const path of ["/", "/lore", "/systems", "/skills", "/glossary"]) {
+      for (const path of [
+        "/",
+        "/lore",
+        "/systems",
+        "/skills",
+        "/glossary",
+        "/tokenmaxx",
+      ]) {
         expect(paths).toContain(path);
       }
 
       expect(
         paths.some((path) =>
-          /(?:\.txt|\.json|\.xml|^\/auth\.md|^\/\.well-known|^\/tokenmaxx)/u.test(
+          /(?:\.txt|\.json|\.xml|^\/auth\.md|^\/\.well-known|^\/tokenmaxx\/)/u.test(
             path ?? ""
           )
         )

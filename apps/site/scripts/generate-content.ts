@@ -2832,7 +2832,6 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
   const tokenmaxxMetadata = {
     description:
       "Loopcraft: the outer loop. A four-hour working session building agent harnesses.",
-    noindex: true,
     path: tokenmaxxRoutePath,
     title: "how to burn a trillion tokens and get good results",
   } as const;
