@@ -17,6 +17,8 @@ export interface IntakeReadStub {
   }>;
 }
 
+export const applicationReadConcurrency = 8;
+
 const readApplication = Effect.fnUntraced(function* readApplication(
   contacts: JoinContactStore["Service"],
   vault: (actor: ContactRef) => IntakeReadStub,
@@ -66,11 +68,14 @@ const listApplications = (
   submissionId?: string
 ) =>
   Effect.gen(function* enumerateApplications() {
-    const submissions =
-      submissionId === undefined ? yield* ids() : [submissionId];
+    const listed = submissionId === undefined ? yield* ids() : undefined;
+    const submissions = listed ?? [submissionId ?? ""];
+    const knownIds = listed === undefined ? ids : () => Effect.succeed(listed);
 
-    return yield* Effect.forEach([...new Set(submissions)], (id) =>
-      readApplication(contacts, vault, ids, id)
+    return yield* Effect.forEach(
+      [...new Set(submissions)],
+      (id) => readApplication(contacts, vault, knownIds, id),
+      { concurrency: applicationReadConcurrency }
     );
   }).pipe(
     Effect.withTracerEnabled(false),
