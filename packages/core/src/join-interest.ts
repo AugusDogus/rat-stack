@@ -3,8 +3,14 @@ import type { Around } from "@rat-stack/capability/call-watch";
 import { implement } from "@rat-stack/capability/implement";
 import { Effect, Option } from "effect";
 
-import { JOIN_ANSWER, joinInterestContract } from "./join-interest-contract.js";
-import type { JoinInput } from "./join-interest-contract.js";
+import {
+  JOIN_ANSWER,
+  JOIN_BUSY,
+  JOIN_DELAYED,
+  JOIN_NOT_OPEN,
+  joinInterestContract,
+} from "./join-interest-contract.js";
+import type { JoinInput, JoinOutput } from "./join-interest-contract.js";
 import { JoinInterest } from "./join-interest-port.js";
 import { MaskedInterestReplay } from "./masked-interest-replay.js";
 
@@ -58,6 +64,13 @@ const implementedJoinInterest = implement(joinInterestContract, (input) =>
     : JoinInterest.pipe(Effect.flatMap((intake) => intake.submit(input)))
 );
 
+const joinOutcomes = {
+  [JOIN_ANSWER]: "accepted",
+  [JOIN_BUSY]: "busy",
+  [JOIN_DELAYED]: "saved_mail_delayed",
+  [JOIN_NOT_OPEN]: "not_open",
+} as const satisfies Record<JoinOutput["message"], string>;
+
 export const joinInterest = {
   ...implementedJoinInterest,
   handler: (input: JoinInput) =>
@@ -105,9 +118,17 @@ export const joinInterest = {
           );
       };
 
-      return yield* implementedJoinInterest
-        .handler(input)
-        .pipe(Effect.provideService(CallWatch, { around }));
+      return yield* implementedJoinInterest.handler(input).pipe(
+        Effect.provideService(CallWatch, { around }),
+        Effect.tap((output) =>
+          Effect.logInfo("joinInterest outcome", {
+            outcome: joinOutcomes[output.message],
+          })
+        ),
+        Effect.tapCause(() =>
+          Effect.logWarning("joinInterest outcome", { outcome: "failed" })
+        )
+      );
     }),
 };
 

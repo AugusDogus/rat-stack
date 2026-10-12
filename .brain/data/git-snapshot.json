@@ -1,7 +1,7 @@
 {
   "files": {
     ".brain/areas/agent-front-door.svx": "39faa9c1c665c0851b127d42b0e941e0c0f5ec2f1c7656c7a389a4fe0dfa992c",
-    ".brain/areas/analytics.svx": "36b8cee4c97f030ea3199bda4d97e17a1447aa45b28d485ef7db3809c38586dd",
+    ".brain/areas/analytics.svx": "ceafd218babf3eeec0dc20f3babf62b888c4640900c7c35ec10462cb854fb64a",
     ".brain/areas/auth.svx": "077058d5b87dd11db5bcb5a7b5f63f89d1c05bd1149519509724c5eaa0182cae",
     ".brain/areas/capabilities.svx": "69074f886793bae03e94df7607a2c6976b8a7fdd60ea5fe1f57337b7f152017b",
     ".brain/areas/database.svx": "ae32d8b714179e09268d0158df36bf9676192ddc51686f04c77c1c8c25b617fa",
@@ -114,7 +114,7 @@
     "apps/cli/src/command.ts": "9a5d543aec187e41101540b5950fa0f55b7a44088531f793123ec95b0bf31536",
     "apps/cli/src/surfaces.ts": "7e643113bbbdb71e127352d8c09b2f9a4ffb69234d997032b9d1cb4ffd5bcf2d",
     "apps/infra/alchemy.run.ts": "0972059cdd7a0c1d571c085ec5479fbdc46b2d761588e1266242b6efb40144e6",
-    "apps/site/src/worker.ts": "b0ce7f2932bfe99cab592617443184f6a7a30c10aa809de05eae5104f6afad91",
+    "apps/site/src/worker.ts": "c9ed170ba1c88b2bd75eac144ea6eb50fe4fd795e185456f5ca04730adb28a73",
     "apps/web/src/dev/backend.ts": "49c825053fcccdc9fd8422cf581274a399ce632fb31554afb3b5d644af812918",
     "apps/web/test/reader.scene.test.ts": "d31452a85c9e17d1dc438f24059d31e71a784b9c8d64b38cc896c13107e97824",
     "packages/capability/src/sandbox-subprocess.ts": "2ac3d1402460b5f5d9d0c08e6200034b592517fb4edfd6216d13adcb799caa25",

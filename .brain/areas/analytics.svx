@@ -128,6 +128,9 @@ A service is a named interface for one job.
 500s log their cause with an incident id.
 
 Cloudflare invocation logs contain request, response, and related metadata. They are separate from custom application messages.
+Alchemy cannot set `redactQueryString`, so invocation logs would store confirm tokens and device codes from query strings.
+Mischief therefore keeps invocation logs off and writes one `HTTP request` log per request with method, path without query, status, and milliseconds.
+`joinInterest` logs one outcome label (`accepted`, `busy`, `saved_mail_delayed`, `not_open`, or `failed`) and nothing else.
 See [Workers Logs](https://developers.cloudflare.com/workers/observability/logs/workers-logs/).
 
 Client IPs reach Basin only as salted hashes. The Worker policy prevents automatic request-header dumps in stored invocation logs.
