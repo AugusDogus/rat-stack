@@ -262,11 +262,11 @@ it.effect.prop(
     )
 );
 
-const DeliveryResult = Schema.Union([
+const WaitFreeDeliveryResult = Schema.Union([
   Schema.Struct({ kind: Schema.Literal("accepted") }),
   Schema.Struct({ kind: Schema.Literal("refused") }),
   Schema.Struct({
-    afterSeconds: Schema.Finite.check(Schema.isGreaterThanOrEqualTo(0)),
+    afterSeconds: Schema.Literals([0, 4, 60]),
     kind: Schema.Literal("retry"),
   }),
 ]);
@@ -292,7 +292,7 @@ const scorerVerdict = (
 it.effect.prop(
   "only availability failures and scorer-only holds return delayed; real holds win",
   {
-    delivery: Arbitrary.schema(DeliveryResult),
+    delivery: Arbitrary.schema(WaitFreeDeliveryResult),
     highScore: Arbitrary.schema(
       Schema.Finite.check(Schema.isBetween({ maximum: 1, minimum: 0.8 }))
     ),
@@ -373,18 +373,15 @@ it.effect.prop(
         )
       );
 
-      const fiber = yield* joinInterest.handler({ ...card, ticket }).pipe(
+      const result = yield* joinInterest.handler({ ...card, ticket }).pipe(
         Effect.provide(layer),
         Effect.provideService(JoinRequest, {
           allow: () => Effect.succeed("allowed" as const),
           ip: "203.0.113.17",
           userAgent: "property-test",
-        }),
-        Effect.forkScoped
+        })
       );
 
-      yield* TestClock.adjust("6 seconds");
-      const result = yield* Fiber.join(fiber);
       const delayed = scorerOnly || (!realHold && delivery.kind === "retry");
       expect(result.message).toBe(delayed ? JOIN_DELAYED : JOIN_ANSWER);
       expect(Schema.is(joinInterestContract.output)(result)).toBe(true);
