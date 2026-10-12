@@ -18,6 +18,8 @@ const refused: IntakeResult = { kind: "refused" };
 
 const retry: IntakeResult = { afterSeconds: 0, kind: "retry" };
 
+const unavailable: IntakeResult = { afterSeconds: 60, kind: "retry" };
+
 export const drovrAgentIntakeLayer = (settings: IntakeSettings) =>
   Layer.effect(
     SubscriberIntake,
@@ -64,7 +66,7 @@ export const drovrAgentIntakeLayer = (settings: IntakeSettings) =>
                     afterSeconds: retryAfterSeconds,
                     kind: "retry",
                   })),
-                  Effect.catchCause(() => Effect.succeed(refused))
+                  Effect.catchCause(() => Effect.succeed(unavailable))
                 );
               }
 

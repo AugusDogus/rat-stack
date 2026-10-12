@@ -7,6 +7,11 @@ import { MaskedInterestReplay } from "./masked-interest-replay.js";
 
 export const JOIN_ANSWER = "Check your email for a link to confirm.";
 
+export const JOIN_BUSY = "Too many requests right now. Try again in a minute.";
+
+export const JOIN_DELAYED =
+  "We saved your application, but the confirmation email couldn't be sent yet. You don't need to apply again; we'll send it when we can.";
+
 export const JOIN_NOT_OPEN = "Agent signup is not open yet.";
 
 const answer = Schema.String.check(Schema.isMaxLength(2000));
@@ -40,7 +45,12 @@ export const joinInterestContract = defineContract("joinInterest", {
     x: Schema.optionalKey(ApplicantX),
   }),
   output: Schema.Struct({
-    message: Schema.Literals([JOIN_ANSWER, JOIN_NOT_OPEN]),
+    message: Schema.Literals([
+      JOIN_ANSWER,
+      JOIN_NOT_OPEN,
+      JOIN_DELAYED,
+      JOIN_BUSY,
+    ]),
     statusRef: Schema.String,
   }),
 });

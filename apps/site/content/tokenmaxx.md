@@ -135,7 +135,7 @@ rat-stack joinInterest \
   --consent '{"contact":true,"share":false}'
 ```
 
-Keep the returned status reference private and show the person the returned message. Ask them to check their email for a confirmation link. Do not claim they joined or received a seat from the submission response.
+Show the person the returned message. If it says "Too many requests right now. Try again in a minute.", wait one minute and retry once. If it says the confirmation email could not be sent yet, do not resubmit. Their application is saved. A delayed response has no usable status reference. Otherwise, keep the returned status reference private. Ask them to check their email only when the message says to do so. Do not claim they joined or received a seat from the submission response.
 
 </AgentOnly>
 

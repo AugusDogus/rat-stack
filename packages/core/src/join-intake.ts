@@ -8,7 +8,7 @@ import {
   Schema,
 } from "effect";
 
-import { AbuseScore } from "./abuse-score.js";
+import { AbuseScore, SCORER_UNAVAILABLE } from "./abuse-score.js";
 import { ContactRefSchema, IntakeEvents } from "./intake-events.js";
 import type {
   IntakeObject,
@@ -23,7 +23,12 @@ import { normalizeClientIp } from "./interest-ip.js";
 import { InterestTokens } from "./interest-token.js";
 import { JoinContactStore } from "./join-contact-store.js";
 import { runJoinDelivery } from "./join-delivery-machine.js";
-import { JOIN_ANSWER, JOIN_NOT_OPEN } from "./join-interest-contract.js";
+import {
+  JOIN_ANSWER,
+  JOIN_BUSY,
+  JOIN_DELAYED,
+  JOIN_NOT_OPEN,
+} from "./join-interest-contract.js";
 import type { JoinInput, JoinOutput } from "./join-interest-contract.js";
 import { JoinInterest, newStatusRef } from "./join-interest-port.js";
 
@@ -34,10 +39,14 @@ type IdentityStatement = {
 export const JoinRequest = Context.Reference<{
   readonly ip: string | undefined;
   readonly userAgent: string;
-  readonly allow: (agentRef: string) => Effect.Effect<boolean>;
+  readonly allow: (
+    agentRef: string
+  ) => Effect.Effect<
+    "allowed" | "ip_limited" | "agent_limited" | "unavailable"
+  >;
 }>("@rat-stack/core/JoinRequest", {
   defaultValue: () => ({
-    allow: () => Effect.succeed(false),
+    allow: () => Effect.succeed("unavailable"),
     ip: undefined,
     userAgent: "",
   }),
@@ -67,7 +76,13 @@ export const joinIntakeLayer = Layer.effect(
       return yield* Effect.gen(function* processSubmission() {
         const request = yield* JoinRequest;
 
-        if (!(yield* request.allow(input.agentRef))) {
+        const gate = yield* request.allow(input.agentRef);
+
+        if (gate === "ip_limited" || gate === "agent_limited") {
+          return { message: JOIN_BUSY, statusRef: "unavailable" } as const;
+        }
+
+        if (gate !== "allowed") {
           return answer;
         }
 
@@ -92,6 +107,21 @@ export const joinIntakeLayer = Layer.effect(
           ticket,
         });
 
+        const scorerDelayed =
+          verdict.hold &&
+          verdict.signals.includes(SCORER_UNAVAILABLE) &&
+          verdict.signals.every((signal) =>
+            [
+              SCORER_UNAVAILABLE,
+              "ticket_instant",
+              "no_answers",
+              "jev_off",
+              "jev_clear",
+            ].includes(signal)
+          );
+
+        const held = verdict.hold && !scorerDelayed;
+
         const contactRef = yield* crypto.randomUUIDv4.pipe(
           Effect.flatMap(Schema.decodeEffect(ContactRefSchema)),
           Effect.orDie
@@ -102,7 +132,7 @@ export const joinIntakeLayer = Layer.effect(
           clientBucket,
           contactRef,
           email: address.value,
-          hold: verdict.hold,
+          hold: held,
           score: verdict.score,
           signals: verdict.signals,
           state: "held",
@@ -166,14 +196,20 @@ export const joinIntakeLayer = Layer.effect(
             input.consent.share ?? false
           ),
           yield* statement("submitted", "tokenmaxx/intake", {
-            held: verdict.hold,
+            held,
             score: verdict.score,
             signals: [...verdict.signals],
           })
         );
         yield* events.record(statements);
 
-        if (verdict.hold) {
+        if (scorerDelayed) {
+          yield* contacts.setState(statusRef, "ready");
+
+          return { message: JOIN_DELAYED, statusRef: "unavailable" } as const;
+        }
+
+        if (held) {
           return answer;
         }
 
@@ -192,7 +228,9 @@ export const joinIntakeLayer = Layer.effect(
 
         yield* contacts.setState(statusRef, stateFor[result.kind]);
 
-        return answer;
+        return result.kind === "retry"
+          ? ({ message: JOIN_DELAYED, statusRef: "unavailable" } as const)
+          : answer;
       }).pipe(Effect.catchCause(() => Effect.succeed(answer)));
     });
 

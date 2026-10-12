@@ -19,6 +19,8 @@ import {
   JoinContactStore,
   JoinRequest,
   JOIN_ANSWER,
+  JOIN_BUSY,
+  JOIN_DELAYED,
   JOIN_NOT_OPEN,
   joinIntakeLayer,
   joinInterest,
@@ -26,9 +28,14 @@ import {
 } from "../src/join-interest.js";
 
 const Scenario = Schema.Struct({
-  allowed: Schema.Boolean,
   enabled: Schema.Boolean,
   eventsUp: Schema.Boolean,
+  gate: Schema.Literals([
+    "allowed",
+    "ip_limited",
+    "agent_limited",
+    "unavailable",
+  ]),
   hold: Schema.Boolean,
   share: Schema.Boolean,
   validIp: Schema.Boolean,
@@ -60,6 +67,7 @@ it.effect.prop(
   ({ answers, scenario }) =>
     Effect.gen(function* verifyGates() {
       const forwarded: AgentIntakeRequest[] = [];
+      const saved: string[] = [];
       const tickets = yield* IntakeTicket;
       const events = yield* IntakeEvents;
       const contacts = yield* JoinContactStore;
@@ -85,7 +93,14 @@ it.effect.prop(
                 signals: [],
               };
             }),
-            Layer.succeed(JoinContactStore, contacts),
+            Layer.succeed(JoinContactStore, {
+              ...contacts,
+              save: (contact) => {
+                saved.push(contact.submissionId);
+
+                return contacts.save(contact);
+              },
+            }),
             Layer.succeed(IntakeTicket, {
               ...tickets,
               verify: (value, id) =>
@@ -131,7 +146,7 @@ it.effect.prop(
               Effect.sync(() => {
                 steps.push("gate");
 
-                return scenario.allowed;
+                return scenario.gate;
               }),
             ip: scenario.validIp ? "203.0.113.17" : undefined,
             userAgent: "property-test",
@@ -140,13 +155,26 @@ it.effect.prop(
 
       const eligible =
         scenario.enabled &&
-        scenario.allowed &&
+        scenario.gate === "allowed" &&
         scenario.validTicket &&
         scenario.validIp;
 
+      const messageForGate = {
+        agent_limited: JOIN_BUSY,
+        allowed: JOIN_ANSWER,
+        ip_limited: JOIN_BUSY,
+        unavailable: JOIN_ANSWER,
+      };
+
       expect(result.message).toBe(
-        scenario.enabled ? JOIN_ANSWER : JOIN_NOT_OPEN
+        scenario.enabled ? messageForGate[scenario.gate] : JOIN_NOT_OPEN
       );
+      expect(saved).toHaveLength(eligible ? 1 : 0);
+
+      if (result.message === JOIN_BUSY) {
+        expect(result.statusRef).toBe("unavailable");
+      }
+
       expect(result.statusRef).not.toContain(card.email);
       expect(forwarded.length).toBe(
         eligible && !scenario.hold && scenario.eventsUp ? 1 : 0
@@ -234,6 +262,161 @@ it.effect.prop(
     )
 );
 
+const WaitFreeDeliveryResult = Schema.Union([
+  Schema.Struct({ kind: Schema.Literal("accepted") }),
+  Schema.Struct({ kind: Schema.Literal("refused") }),
+  Schema.Struct({
+    afterSeconds: Schema.Literals([0, 4, 60]),
+    kind: Schema.Literal("retry"),
+  }),
+]);
+
+const scorerVerdict = (
+  scorerUnavailable: boolean,
+  realReason: string,
+  softSignals: readonly string[],
+  highScore: number
+) => ({
+  hold: scorerUnavailable || realReason !== "none",
+  score: Math.max(
+    scorerUnavailable ? 1 : 0,
+    realReason === "none" ? 0 : highScore
+  ),
+  signals: [
+    ...softSignals,
+    ...(scorerUnavailable ? ["scorer_unavailable"] : []),
+    ...(realReason === "none" ? [] : [realReason]),
+  ],
+});
+
+it.effect.prop(
+  "only availability failures and scorer-only holds return delayed; real holds win",
+  {
+    delivery: Arbitrary.schema(WaitFreeDeliveryResult),
+    highScore: Arbitrary.schema(
+      Schema.Finite.check(Schema.isBetween({ maximum: 1, minimum: 0.8 }))
+    ),
+    realReason: Arbitrary.schema(
+      Schema.Literals([
+        "none",
+        "answer_junk",
+        "answer_overlong",
+        "jev_flagged",
+        "unknown_hold",
+      ])
+    ),
+    scorerUnavailable: Arbitrary.schema(Schema.Boolean),
+    softSignals: Arbitrary.array(
+      Arbitrary.schema(
+        Schema.Literals([
+          "ticket_instant",
+          "no_answers",
+          "jev_off",
+          "jev_clear",
+        ])
+      ),
+      { maxLength: 4 }
+    ),
+  },
+  ({ delivery, highScore, realReason, scorerUnavailable, softSignals }) =>
+    Effect.gen(function* verifyDeliveryAnswer() {
+      const realHold = realReason !== "none";
+      const scorerOnly = scorerUnavailable && !realHold;
+
+      const verdict = scorerVerdict(
+        scorerUnavailable,
+        realReason,
+        softSignals,
+        highScore
+      );
+
+      const sent: string[] = [];
+      const tickets = yield* IntakeTicket;
+      const contacts = yield* JoinContactStore;
+      const ticket = yield* tickets.mint(PAGE_TICKET_SOURCE);
+      const states: string[] = [];
+      const submissionIds: string[] = [];
+
+      const layer = joinIntakeLayer.pipe(
+        Layer.provide(
+          Layer.mergeAll(
+            base,
+            IntakeEvents.testLayer,
+            Layer.succeed(IntakeTicket, tickets),
+            Layer.succeed(JoinContactStore, {
+              ...contacts,
+              save: (contact) => {
+                submissionIds.push(contact.submissionId);
+
+                return contacts.save(contact);
+              },
+              setState: (id, state) => {
+                states.push(state);
+
+                return contacts.setState(id, state);
+              },
+            }),
+            AbuseScore.testLayer(verdict),
+            Layer.succeed(SubscriberIntake, {
+              agent: {
+                enabled: true,
+                submit: (input) =>
+                  Effect.sync(() => {
+                    sent.push(input.submissionId);
+
+                    return delivery;
+                  }),
+              },
+              submit: () => Effect.die("person intake must not run"),
+            })
+          )
+        )
+      );
+
+      const result = yield* joinInterest.handler({ ...card, ticket }).pipe(
+        Effect.provide(layer),
+        Effect.provideService(JoinRequest, {
+          allow: () => Effect.succeed("allowed" as const),
+          ip: "203.0.113.17",
+          userAgent: "property-test",
+        })
+      );
+
+      const delayed = scorerOnly || (!realHold && delivery.kind === "retry");
+      expect(result.message).toBe(delayed ? JOIN_DELAYED : JOIN_ANSWER);
+      expect(Schema.is(joinInterestContract.output)(result)).toBe(true);
+      const [submissionId] = submissionIds;
+      expect(submissionId).toBeDefined();
+      const contact = yield* contacts.read(submissionId ?? "missing");
+
+      const deliveredState = {
+        accepted: "accepted",
+        refused: "refused",
+        retry: "ready",
+      };
+
+      const unheldState = scorerOnly ? "ready" : deliveredState[delivery.kind];
+      expect(contact?.state).toBe(realHold ? "held" : unheldState);
+      expect(contact?.hold).toBe(realHold);
+      expect(contact?.signals).toEqual(verdict.signals);
+      expect(contact?.email).toBe(card.email);
+      expect(result.statusRef).toBe(delayed ? "unavailable" : submissionId);
+      const deferredStates = scorerOnly ? ["ready"] : [];
+      expect(states).toEqual(
+        realHold || scorerOnly
+          ? deferredStates
+          : ["ready", deliveredState[delivery.kind]]
+      );
+
+      const expectedCalls =
+        delivery.kind === "retry" && delivery.afterSeconds <= 3 ? 3 : 1;
+
+      expect(sent).toHaveLength(realHold || scorerOnly ? 0 : expectedCalls);
+      expect(sent.every((id) => id === submissionId)).toBe(true);
+    }).pipe(Effect.scoped, Effect.provide(base)),
+  { arbitrary: { runs: 100 } }
+);
+
 it.effect.prop(
   "accepts optional answers up to the public limit and rejects longer answers for every question",
   {
@@ -314,7 +497,7 @@ it.effect.prop(
       const fiber = yield* joinInterest.handler({ ...card, ticket }).pipe(
         Effect.provide(layer),
         Effect.provideService(JoinRequest, {
-          allow: () => Effect.succeed(true),
+          allow: () => Effect.succeed("allowed" as const),
           ip: "203.0.113.17",
           userAgent: "property-test",
         }),
@@ -385,7 +568,7 @@ it.effect.prop(
       const submit = joinInterest.handler({ ...card, ticket }).pipe(
         Effect.provide(layer),
         Effect.provideService(JoinRequest, {
-          allow: () => Effect.succeed(true),
+          allow: () => Effect.succeed("allowed" as const),
           ip: "203.0.113.17",
           userAgent: "property-test",
         })
@@ -402,7 +585,7 @@ it.effect.prop(
 
       expect(sent.length).toBe(expectedAttempts);
       expect(
-        sent.every((input) => input.submissionId === first.statusRef)
+        sent.every((input) => input.submissionId === sent[0]?.submissionId)
       ).toBe(true);
       expect(
         sent.every(
@@ -410,7 +593,13 @@ it.effect.prop(
         )
       ).toBe(true);
       const second = yield* submit;
-      expect(second.message).toBe(first.message);
+      expect(first.message).toBe(
+        generated.slice(0, 3).length === 3 &&
+          generated.slice(0, 3).every((kind) => kind === "retry")
+          ? JOIN_DELAYED
+          : JOIN_ANSWER
+      );
+      expect(second.message).toBe(JOIN_ANSWER);
       expect(second.statusRef).not.toBe(first.statusRef);
       expect(sent.length).toBe(expectedAttempts);
     }).pipe(Effect.provide(base))
@@ -445,7 +634,7 @@ it.effect(
       yield* joinInterest.handler({ ...card, ticket }).pipe(
         Effect.provideContext(services),
         Effect.provideService(JoinRequest, {
-          allow: () => Effect.succeed(true),
+          allow: () => Effect.succeed("allowed" as const),
           ip: "203.0.113.17",
           userAgent: "test",
         })
