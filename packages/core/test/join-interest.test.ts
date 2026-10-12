@@ -19,6 +19,7 @@ import {
   JoinContactStore,
   JoinRequest,
   JOIN_ANSWER,
+  JOIN_DELAYED,
   JOIN_NOT_OPEN,
   joinIntakeLayer,
   joinInterest,
@@ -234,6 +235,97 @@ it.effect.prop(
     )
 );
 
+const DeliveryResult = Schema.Union([
+  Schema.Struct({ kind: Schema.Literal("accepted") }),
+  Schema.Struct({ kind: Schema.Literal("refused") }),
+  Schema.Struct({
+    afterSeconds: Schema.Finite.check(Schema.isGreaterThanOrEqualTo(0)),
+    kind: Schema.Literal("retry"),
+  }),
+]);
+
+it.effect.prop(
+  "only unheld availability failures return delayed and preserve a ready submission",
+  {
+    delivery: Arbitrary.schema(DeliveryResult),
+    hold: Arbitrary.schema(Schema.Boolean),
+  },
+  ({ delivery, hold }) =>
+    Effect.gen(function* verifyDeliveryAnswer() {
+      const tickets = yield* IntakeTicket;
+      const contacts = yield* JoinContactStore;
+      const ticket = yield* tickets.mint(PAGE_TICKET_SOURCE);
+      const states: string[] = [];
+      const submissionIds: string[] = [];
+
+      const layer = joinIntakeLayer.pipe(
+        Layer.provide(
+          Layer.mergeAll(
+            base,
+            IntakeEvents.testLayer,
+            Layer.succeed(IntakeTicket, tickets),
+            Layer.succeed(JoinContactStore, {
+              ...contacts,
+              save: (contact) => {
+                submissionIds.push(contact.submissionId);
+
+                return contacts.save(contact);
+              },
+              setState: (id, state) => {
+                states.push(state);
+
+                return contacts.setState(id, state);
+              },
+            }),
+            AbuseScore.testLayer(() => ({ hold, score: 0, signals: [] })),
+            Layer.succeed(SubscriberIntake, {
+              agent: {
+                enabled: true,
+                submit: () => Effect.succeed(delivery),
+              },
+              submit: () => Effect.die("person intake must not run"),
+            })
+          )
+        )
+      );
+
+      const fiber = yield* joinInterest.handler({ ...card, ticket }).pipe(
+        Effect.provide(layer),
+        Effect.provideService(JoinRequest, {
+          allow: () => Effect.succeed(true),
+          ip: "203.0.113.17",
+          userAgent: "property-test",
+        }),
+        Effect.forkScoped
+      );
+
+      yield* TestClock.adjust("6 seconds");
+      const result = yield* Fiber.join(fiber);
+      const delayed = !hold && delivery.kind === "retry";
+      expect(result.message).toBe(delayed ? JOIN_DELAYED : JOIN_ANSWER);
+      expect(Schema.is(joinInterestContract.output)(result)).toBe(true);
+      const [submissionId] = submissionIds;
+      expect(submissionId).toBeDefined();
+      const contact = yield* contacts.read(submissionId ?? "missing");
+
+      const deliveredState = {
+        accepted: "accepted",
+        refused: "refused",
+        retry: "ready",
+      };
+
+      expect(contact?.state).toBe(
+        hold ? "held" : deliveredState[delivery.kind]
+      );
+      expect(contact?.email).toBe(card.email);
+      expect(result.statusRef).toBe(delayed ? "unavailable" : submissionId);
+      expect(states).toEqual(
+        hold ? [] : ["ready", delayed ? "ready" : delivery.kind]
+      );
+    }).pipe(Effect.scoped, Effect.provide(base)),
+  { arbitrary: { runs: 100 } }
+);
+
 it.effect.prop(
   "accepts optional answers up to the public limit and rejects longer answers for every question",
   {
@@ -402,7 +494,7 @@ it.effect.prop(
 
       expect(sent.length).toBe(expectedAttempts);
       expect(
-        sent.every((input) => input.submissionId === first.statusRef)
+        sent.every((input) => input.submissionId === sent[0]?.submissionId)
       ).toBe(true);
       expect(
         sent.every(
@@ -410,7 +502,13 @@ it.effect.prop(
         )
       ).toBe(true);
       const second = yield* submit;
-      expect(second.message).toBe(first.message);
+      expect(first.message).toBe(
+        generated.slice(0, 3).length === 3 &&
+          generated.slice(0, 3).every((kind) => kind === "retry")
+          ? JOIN_DELAYED
+          : JOIN_ANSWER
+      );
+      expect(second.message).toBe(JOIN_ANSWER);
       expect(second.statusRef).not.toBe(first.statusRef);
       expect(sent.length).toBe(expectedAttempts);
     }).pipe(Effect.provide(base))

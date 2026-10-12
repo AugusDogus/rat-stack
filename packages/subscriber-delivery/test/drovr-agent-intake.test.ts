@@ -58,7 +58,7 @@ const Scenario = Schema.Struct({
 });
 
 it.effect.prop(
-  "acceptance and retry require the exact agent response shapes",
+  "every 503 requests replay while only valid 202 bodies prove acceptance",
   { scenario: Arbitrary.schema(Scenario) },
   ({ scenario }) => {
     const success =
@@ -86,17 +86,56 @@ it.effect.prop(
         Effect.sync(() => {
           if (scenario.status === 202 && scenario.validBody) {
             expect(result).toEqual({ kind: "accepted" });
-          } else if (
-            scenario.status === 503 &&
-            scenario.validBody &&
-            scenario.afterSeconds >= 0
-          ) {
+          } else if (scenario.status === 503) {
             expect(result).toEqual({
-              afterSeconds: scenario.afterSeconds,
+              afterSeconds:
+                scenario.validBody && scenario.afterSeconds >= 0
+                  ? scenario.afterSeconds
+                  : 60,
               kind: "retry",
             });
           } else {
             expect(result).toEqual({ kind: "refused" });
+          }
+        })
+      )
+    );
+  }
+);
+
+it.effect.prop(
+  "503 bodies without a retry hint defer delivery beyond the in-request retry window",
+  {
+    body: Arbitrary.schema(
+      Schema.Literals([
+        "",
+        "{",
+        '{"error":"intake_rate_limited"}',
+        '{"retryAfterSeconds":"60"}',
+      ])
+    ),
+  },
+  ({ body }) => {
+    const client = Layer.succeed(
+      HttpClient.HttpClient,
+      HttpClient.make((request) =>
+        Effect.succeed(
+          HttpClientResponse.fromWeb(
+            request,
+            new Response(body, { status: 503 })
+          )
+        )
+      )
+    );
+
+    return submit.pipe(
+      Effect.provide(layer(client, "agent-only-secret")),
+      Effect.tap((result) =>
+        Effect.sync(() => {
+          expect(result.kind).toBe("retry");
+
+          if (result.kind === "retry") {
+            expect(result.afterSeconds).toBeGreaterThan(3);
           }
         })
       )

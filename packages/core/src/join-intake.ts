@@ -23,7 +23,11 @@ import { normalizeClientIp } from "./interest-ip.js";
 import { InterestTokens } from "./interest-token.js";
 import { JoinContactStore } from "./join-contact-store.js";
 import { runJoinDelivery } from "./join-delivery-machine.js";
-import { JOIN_ANSWER, JOIN_NOT_OPEN } from "./join-interest-contract.js";
+import {
+  JOIN_ANSWER,
+  JOIN_DELAYED,
+  JOIN_NOT_OPEN,
+} from "./join-interest-contract.js";
 import type { JoinInput, JoinOutput } from "./join-interest-contract.js";
 import { JoinInterest, newStatusRef } from "./join-interest-port.js";
 
@@ -192,7 +196,9 @@ export const joinIntakeLayer = Layer.effect(
 
         yield* contacts.setState(statusRef, stateFor[result.kind]);
 
-        return answer;
+        return result.kind === "retry"
+          ? ({ message: JOIN_DELAYED, statusRef: "unavailable" } as const)
+          : answer;
       }).pipe(Effect.catchCause(() => Effect.succeed(answer)));
     });
 
