@@ -119,6 +119,7 @@ export { JoinRequest, joinIntakeLayer } from "./join-intake.js";
 
 export {
   JOIN_ANSWER,
+  JOIN_BUSY,
   JOIN_DELAYED,
   JOIN_NOT_OPEN,
   JoinAnswers,

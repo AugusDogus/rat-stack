@@ -25,22 +25,36 @@ export const joinRequestMiddleware = (options: {
                 options.tokens === undefined ||
                 Option.isNone(ip)
               ) {
-                return false;
+                return "unavailable" as const;
               }
 
               if (
                 !(yield* options.rateLimits.limit("INTEREST_PER_IP", ip.value))
               ) {
-                return false;
+                yield* Effect.logWarning("joinInterest rate gate refused", {
+                  bucket: "ip",
+                });
+
+                return "ip_limited" as const;
               }
 
               const tokens = Context.get(options.tokens, InterestTokens);
               const agentBucket = yield* tokens.digest("agent", agentRef);
 
-              return yield* options.rateLimits.limit(
-                "INTEREST_PER_IP",
-                `agent:${agentBucket}`
-              );
+              if (
+                !(yield* options.rateLimits.limit(
+                  "INTEREST_PER_IP",
+                  `agent:${agentBucket}`
+                ))
+              ) {
+                yield* Effect.logWarning("joinInterest rate gate refused", {
+                  bucket: "agent",
+                });
+
+                return "agent_limited" as const;
+              }
+
+              return "allowed" as const;
             }),
             ip: Option.getOrUndefined(ip),
             userAgent: request.headers["user-agent"] ?? "",

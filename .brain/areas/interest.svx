@@ -107,15 +107,27 @@ Set `INTEREST_OPERATOR_TOKEN` through the local environment schema. Keep its val
 - `rat-stack intake redeliver --submission-id <id>` retries a ready application with its original submission ID.
 
 Repeat `--submission-id` to provide an ordered batch. Redelivery processes one ID at a time.
-Only ready contacts without an abuse hold can be sent by default. Erased contacts appear as missing.
-Add `--dry-run` to inspect every named ID without sending or changing state. Eligible rows say `would_send`.
-Add `--include-refused` only for explicitly approved IDs whose refusal came from a verified availability failure.
-This per-call option repairs named refused contacts to ready before delivery. It never permits held or accepted contacts.
-The live batch stops at the first skipped, refused, or retry outcome. The result lists IDs not attempted.
-Each row contains the pre-run state in `previousState` and the resulting `state`.
-The response contains submission IDs, outcomes, and states. It contains no email addresses or answers.
+
+- Only ready contacts without an abuse hold can be sent by default. Erased contacts appear as missing.
+- Add `--dry-run` to inspect every named ID without sending or changing state. Eligible rows say `would_send`.
+- Add `--include-refused` only for explicitly approved IDs whose refusal came from a verified availability failure.
+  This per-call option repairs named refused contacts to ready before delivery. It never permits held or accepted contacts.
+- The live batch stops at the first skipped, refused, or retry outcome. The result lists IDs not attempted.
+- Each row contains the pre-run state in `previousState` and the resulting `state`.
+- The response contains submission IDs, outcomes, and states. It contains no email addresses or answers.
+
 The operator route is `POST /operator/interest/applications/redeliver`. It uses the same bearer token as erasure.
+
 If the command fails, read application states before retrying. A failed request can have completed part of the batch.
+
+A scorer outage alone saves a ready contact without sending. The response tells the person that confirmation is delayed.
+
+Non-holding signals can accompany that outage: `ticket_instant`, `no_answers`, `jev_off`, and `jev_clear`.
+Real abuse holds and unknown signals keep the contact held, even with a scorer outage.
+
+Use redelivery after the outage is fixed. The saved submission ID stays unchanged.
+
+Rate refusals return a busy message and save nothing. The agent waits one minute and retries once.
 
 ## How to check
 
