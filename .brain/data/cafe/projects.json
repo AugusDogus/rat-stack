@@ -2335,5 +2335,24 @@
     "summary": "devchris.",
     "title": "yovanoc/devchris",
     "url": "https://github.com/yovanoc/devchris"
+  },
+  {
+    "author": {
+      "github": "nickbreaton",
+      "x": "nickbreaton"
+    },
+    "date": "2026-10-12",
+    "repo": "nickbreaton/tld-search",
+    "source": "https://x.com/nickbreaton/status/2109660668307656951",
+    "stack": {
+      "alchemy": "package.json: \"alchemy\": \"2.0.0-beta.81\"",
+      "cloudflare": "alchemy.run.ts: Cloudflare.Website.Vite(\"TldSearchWebsite\", …)",
+      "effect": "package.json: \"effect\": \"4.0.0\"",
+      "foldkit": null
+    },
+    "stars": 0,
+    "summary": "Finds a top-level domain for a project name; Solid 2 front end, Effect, deployed to Cloudflare with Alchemy.",
+    "title": "nickbreaton/tld-search",
+    "url": "https://github.com/nickbreaton/tld-search"
   }
 ]
