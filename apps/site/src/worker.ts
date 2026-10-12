@@ -62,6 +62,7 @@ import {
   logRequestIncident,
   observeRequestIncidents,
 } from "./request-incidents.js";
+import { observeRequestLog } from "./request-log.js";
 import { layerWorkerLoader, sandboxLimits } from "./sandbox-loader.js";
 import type { WorkerLoaderBinding } from "./sandbox-worker-loader.js";
 import { AssetBindingSchema, StaticAssets } from "./static-assets.js";
@@ -334,30 +335,32 @@ export const makeMischief = (
     )(app);
 
     return {
-      fetch: observeRequestIncidents(
-        events === undefined
-          ? readerApp
-          : Effect.gen(function* captureWithLiveIdentity() {
-              const currentIdentity =
-                liveFlags === undefined
-                  ? identityMode
-                  : yield* liveFlags
-                      .get(eventsIdentityMode, {})
-                      .pipe(
-                        Effect.catch((error) =>
-                          Effect.logError(
-                            "Flag read failed; using Config fallback.",
-                            error
-                          ).pipe(Effect.andThen(Effect.succeed(identityMode)))
-                        )
-                      );
+      fetch: observeRequestLog(
+        observeRequestIncidents(
+          events === undefined
+            ? readerApp
+            : Effect.gen(function* captureWithLiveIdentity() {
+                const currentIdentity =
+                  liveFlags === undefined
+                    ? identityMode
+                    : yield* liveFlags
+                        .get(eventsIdentityMode, {})
+                        .pipe(
+                          Effect.catch((error) =>
+                            Effect.logError(
+                              "Flag read failed; using Config fallback.",
+                              error
+                            ).pipe(Effect.andThen(Effect.succeed(identityMode)))
+                          )
+                        );
 
-              return yield* withEventCapture({
-                captureCity: true,
-                identityMode: currentIdentity,
-                runInBackground: inBackground,
-              })(readerApp).pipe(Effect.provideContext(events));
-            })
+                return yield* withEventCapture({
+                  captureCity: true,
+                  identityMode: currentIdentity,
+                  runInBackground: inBackground,
+                })(readerApp).pipe(Effect.provideContext(events));
+              })
+        )
       ),
     };
   });
