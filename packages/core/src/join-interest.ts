@@ -32,6 +32,18 @@ export {
 
 export type { IntakeEraseCounts } from "./intake-erase.js";
 
+export {
+  IntakeRedeliver,
+  IntakeRedeliverySchema,
+  intakeRedeliver,
+  intakeRedeliverContract,
+} from "./intake-redeliver.js";
+
+export type {
+  IntakeRedelivery,
+  IntakeRedeliveryInput,
+} from "./intake-redeliver.js";
+
 export const MASKED_INTEREST_VALUE = "redacted";
 
 const implementedJoinInterest = implement(joinInterestContract, (input) =>

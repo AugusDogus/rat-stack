@@ -98,6 +98,25 @@ Skipped fields and historical applications omit both keys.
 - MCP request tracing is disabled in the protocol implementation for modern and legacy protocols.
   The protocol's `tools/call` span records raw parameters before the capability observer can remove sensitive values.
 
+## Operator commands
+
+Set `INTEREST_OPERATOR_TOKEN` through the local environment schema. Keep its value private.
+
+- `rat-stack intake list --submission-id <id>` reads one application.
+- `rat-stack intake erase --submission-id <id>` erases local contact data and sealed answers.
+- `rat-stack intake redeliver --submission-id <id>` retries a ready application with its original submission ID.
+
+Repeat `--submission-id` to provide an ordered batch. Redelivery processes one ID at a time.
+Only ready contacts without an abuse hold can be sent by default. Erased contacts appear as missing.
+Add `--dry-run` to inspect every named ID without sending or changing state. Eligible rows say `would_send`.
+Add `--include-refused` only for explicitly approved IDs whose refusal came from a verified availability failure.
+This per-call option repairs named refused contacts to ready before delivery. It never permits held or accepted contacts.
+The live batch stops at the first skipped, refused, or retry outcome. The result lists IDs not attempted.
+Each row contains the pre-run state in `previousState` and the resulting `state`.
+The response contains submission IDs, outcomes, and states. It contains no email addresses or answers.
+The operator route is `POST /operator/interest/applications/redeliver`. It uses the same bearer token as erasure.
+If the command fails, read application states before retrying. A failed request can have completed part of the batch.
+
 ## How to check
 
 - Read `apps/site/src/interest/routes.ts` for email confirmation, `retired-routes.ts` for 410 responses, and `packages/core/src/join-intake.ts` for agent applications. The only published signup capability is `joinInterest`.

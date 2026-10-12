@@ -16,6 +16,9 @@ import type {
 import {
   IntakeApplications,
   IntakeErasure,
+  IntakeRedeliver,
+  intakeRedeliver,
+  intakeRedeliverContract,
   intakeErase,
   intakeEraseContract,
   intakeApplications,
@@ -41,6 +44,7 @@ import { confirmPage, resultPage } from "./pages.js";
 export interface InterestOptions {
   readonly applications?: IntakeApplications["Service"] | undefined;
   readonly erasure?: IntakeErasure["Service"] | undefined;
+  readonly redelivery?: IntakeRedeliver["Service"] | undefined;
   readonly operatorToken?: string | undefined;
   readonly rateLimits?: RateLimits | undefined;
   readonly services: Context.Context<
@@ -410,6 +414,54 @@ export const interestRoutes = (options: InterestOptions) => {
         Effect.withTracerEnabled(false),
         Effect.provide(Logger.layer([]))
       )
+    ),
+    HttpRouter.add(
+      "POST",
+      "/operator/interest/applications/redeliver",
+      (request) =>
+        guarded(request, () =>
+          Effect.gen(function* redeliverApplications() {
+            const input = yield* request.json.pipe(
+              Effect.flatMap(
+                Schema.decodeUnknownEffect(intakeRedeliverContract.input)
+              ),
+              Effect.option
+            );
+
+            if (Option.isNone(input)) {
+              return HttpServerResponse.text("Bad request.\n", {
+                headers: operatorHeaders,
+                status: 400,
+              });
+            }
+
+            if (options.redelivery === undefined) {
+              return HttpServerResponse.text("Applications unavailable.\n", {
+                headers: operatorHeaders,
+                status: 503,
+              });
+            }
+
+            return yield* intakeRedeliver.handler(input.value).pipe(
+              Effect.provideService(IntakeRedeliver, options.redelivery),
+              Effect.match({
+                onFailure: () =>
+                  HttpServerResponse.text("Applications unavailable.\n", {
+                    headers: operatorHeaders,
+                    status: 503,
+                  }),
+                onSuccess: (result) =>
+                  HttpServerResponse.jsonUnsafe(result, {
+                    headers: operatorHeaders,
+                  }),
+              })
+            );
+          })
+        ).pipe(
+          Effect.map(HttpServerResponse.setHeaders(operatorHeaders)),
+          Effect.withTracerEnabled(false),
+          Effect.provide(Logger.layer([]))
+        )
     ),
     HttpRouter.add("GET", "/operator/interest/captures", (request) =>
       guarded(request, () =>

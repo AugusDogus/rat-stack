@@ -8,6 +8,7 @@ import type { InterestDirectory } from "@rat-stack/core/interest";
 import {
   IntakeApplications,
   IntakeErasure,
+  IntakeRedeliver,
 } from "@rat-stack/core/join-interest";
 import { withEventCapture } from "@rat-stack/events";
 import type { EventSink, VisitorSalt } from "@rat-stack/events";
@@ -250,6 +251,17 @@ export const makeMischief = (
             )
           );
 
+    const redelivery =
+      joinServices === undefined
+        ? undefined
+        : yield* IntakeRedeliver.pipe(
+            Effect.provide(
+              IntakeRedeliver.layer.pipe(
+                Layer.provide(Layer.succeedContext(joinServices))
+              )
+            )
+          );
+
     const assetBinding = Schema.decodeUnknownOption(AssetBindingSchema)(
       environment.ASSETS
     );
@@ -285,7 +297,7 @@ export const makeMischief = (
       interest:
         interest === undefined
           ? undefined
-          : { ...interest, applications, erasure },
+          : { ...interest, applications, erasure, redelivery },
       joinTokens: interestServices,
       legacyMcp,
       rateLimits,
