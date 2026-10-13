@@ -9,9 +9,9 @@ import {
 } from "effect/http";
 import type { HttpServerRequest } from "effect/http";
 
-import { unsubscribeDocumentHtml } from "../bundled-content.generated.js";
 import { renderStaticDocument } from "../html.js";
 import { contentSecurityPolicy } from "../security.js";
+import { loadInterestPages } from "./page-templates.js";
 import {
   UNSUBSCRIBE_HEADING,
   UNSUBSCRIBE_QUESTION,
@@ -52,12 +52,14 @@ interface UnsubscribeHeaders {
   location?: string;
 }
 
-const page = (
+const page = Effect.fnUntraced(function* page(
   request: HttpServerRequest.HttpServerRequest,
   message: string,
   status: number,
   action?: string
-) => {
+) {
+  const { unsubscribeDocumentHtml } = yield* loadInterestPages;
+
   const form =
     action === undefined
       ? ""
@@ -80,7 +82,7 @@ const page = (
       status,
     }
   );
-};
+});
 
 const unavailable = () =>
   HttpServerResponse.jsonUnsafe(
@@ -123,7 +125,7 @@ export const forwardUnsubscribe = Effect.fnUntraced(
     }
 
     return wantsHtml(request)
-      ? page(
+      ? yield* page(
           request,
           response.status >= 200 && response.status < 300
             ? UNSUBSCRIBE_SUCCESS
@@ -159,7 +161,7 @@ export const unsubscribeRoutes = Layer.unwrap(
       HttpRouter.add("GET", UNSUBSCRIBE_PATH, (request) => {
         const segment = rawTokenSegment(request.url);
 
-        return Effect.succeed(
+        return (
           segment === undefined || segment === "t="
             ? page(request, UNSUBSCRIBE_REFUSED, 400)
             : page(

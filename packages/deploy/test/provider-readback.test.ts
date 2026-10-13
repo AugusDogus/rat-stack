@@ -4,7 +4,7 @@ import {
 } from "@distilled.cloud/cloudflare/Credentials";
 import * as Workers from "@distilled.cloud/cloudflare/workers";
 import { expect, it } from "@effect/vitest";
-import { Effect } from "effect";
+import { Effect, Redacted } from "effect";
 import * as HttpClient from "effect/http/HttpClient";
 import * as HttpClientResponse from "effect/http/HttpClientResponse";
 
@@ -20,7 +20,9 @@ it.effect(
       }).pipe(
         Effect.provideService(
           Credentials,
-          Effect.succeed(apiTokenCredentials({ apiToken: "fixture-token" }))
+          Effect.succeed(
+            apiTokenCredentials({ apiToken: Redacted.make("fixture-token") })
+          )
         ),
         Effect.provideService(
           HttpClient.HttpClient,

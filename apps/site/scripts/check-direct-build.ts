@@ -12,6 +12,7 @@ class DirectBuildFailed extends Schema.TaggedError<DirectBuildFailed>()(
 const outputs = [
   "src/bundled-content.generated.ts",
   "src/rat-icons.generated.ts",
+  "src/interest-pages.generated.ts",
   "dist/content",
 ];
 

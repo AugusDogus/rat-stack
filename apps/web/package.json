@@ -29,7 +29,7 @@
     "@rat-stack/devtools": "workspace:*",
     "@rat-stack/site": "workspace:*",
     "@stylexjs/stylex": "0.19.1",
-    "alchemy": "2.0.0-beta.81",
+    "alchemy": "2.0.0-beta.83",
     "effect": "4.0.0",
     "foldkit": "0.167.0"
   },

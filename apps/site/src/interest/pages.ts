@@ -1,12 +1,10 @@
+import { Effect } from "effect";
 import { HttpServerResponse } from "effect/http";
 
-import {
-  interestConfirmDocumentHtml,
-  interestResultDocumentHtml,
-} from "../bundled-content.generated.js";
 import { renderErrorPage } from "../error-page.js";
 import { renderStaticDocument } from "../html.js";
 import { contentSecurityPolicy } from "../security.js";
+import { loadInterestPages } from "./page-templates.js";
 
 const escapeHtml = (value: string) =>
   value
@@ -29,7 +27,7 @@ const page = (body: string, status: number) =>
     status,
   });
 
-export const resultPage = (
+export const resultPage = Effect.fnUntraced(function* resultPage(
   origin: string,
   result: {
     readonly heading: string;
@@ -38,7 +36,7 @@ export const resultPage = (
     readonly path?: string;
     readonly status: number;
   }
-) => {
+) {
   const { link } = result;
 
   if (result.status >= 400) {
@@ -61,6 +59,8 @@ export const resultPage = (
     );
   }
 
+  const { interestResultDocumentHtml } = yield* loadInterestPages;
+
   const linkHtml =
     link === undefined
       ? ""
@@ -73,13 +73,19 @@ export const resultPage = (
       .replaceAll("__INTEREST_LINK__", linkHtml),
     result.status
   );
-};
+});
 
-export const confirmPage = (origin: string, token: string) =>
-  page(
+export const confirmPage = Effect.fnUntraced(function* confirmPage(
+  origin: string,
+  token: string
+) {
+  const { interestConfirmDocumentHtml } = yield* loadInterestPages;
+
+  return page(
     renderStaticDocument(origin, interestConfirmDocumentHtml).replaceAll(
       "__INTEREST_TOKEN__",
       escapeHtml(token)
     ),
     200
   );
+});

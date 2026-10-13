@@ -84,18 +84,18 @@ export class WorkerDeployments extends Context.Service<
             const credential = Match.value(native).pipe(
               Match.when({ type: "apiKey" }, (value) =>
                 apiKeyCredentials({
-                  apiKey: Redacted.value(value.apiKey),
+                  apiKey: value.apiKey,
                   email: Redacted.value(value.email),
                 })
               ),
               Match.when({ type: "apiToken" }, (value) =>
                 apiTokenCredentials({
-                  apiToken: Redacted.value(value.apiToken),
+                  apiToken: value.apiToken,
                 })
               ),
               Match.when({ type: "oauth" }, (value) =>
                 oauthCredentials({
-                  accessToken: Redacted.value(value.accessToken),
+                  accessToken: value.accessToken,
                 })
               ),
               Match.exhaustive

@@ -42,7 +42,7 @@ export const IntakeBasin = ({ name }: IntakeBasinOptions) =>
 
       const { backfill, events } = basinIntakeEvents({
         send: (rows) =>
-          writer.send(rows).pipe(
+          writer.send(rows.map((row) => ({ value: row.value }))).pipe(
             Effect.mapError(() => new IntakeEventsUnavailable({})),
             Effect.provide(RuntimeContext.RuntimeContext.phantom)
           ),

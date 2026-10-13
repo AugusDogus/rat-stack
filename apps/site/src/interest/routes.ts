@@ -224,7 +224,7 @@ export const interestRoutes = (options: InterestOptions) => {
         const mode = yield* InterestMode;
 
         if (mode === "capture") {
-          return invalidLink(originOf(request));
+          return yield* invalidLink(originOf(request));
         }
 
         const token =
@@ -236,17 +236,17 @@ export const interestRoutes = (options: InterestOptions) => {
           const state = yield* (yield* SubscriberConfirm).state(token);
 
           if (state === "pending") {
-            return confirmPage(originOf(request), token);
+            return yield* confirmPage(originOf(request), token);
           }
 
-          return pageForOutcome(originOf(request), state);
+          return yield* pageForOutcome(originOf(request), state);
         }
 
         const tokens = yield* InterestTokens;
         const now = yield* Clock.currentTimeMillis;
 
         return yield* tokens.verify(token, now).pipe(
-          Effect.match({
+          Effect.matchEffect({
             onFailure: (failure) =>
               resultPage(originOf(request), {
                 heading:
@@ -269,7 +269,7 @@ export const interestRoutes = (options: InterestOptions) => {
         const mode = yield* InterestMode;
 
         if (mode === "capture") {
-          return invalidLink(originOf(request));
+          return yield* invalidLink(originOf(request));
         }
 
         const params = yield* request.urlParamsBody;
@@ -279,7 +279,7 @@ export const interestRoutes = (options: InterestOptions) => {
             formValue(params, "token") ?? ""
           );
 
-          return pageForOutcome(originOf(request), outcome);
+          return yield* pageForOutcome(originOf(request), outcome);
         }
 
         const answered = yield* confirmInterest
@@ -306,7 +306,7 @@ export const interestRoutes = (options: InterestOptions) => {
             Effect.provideContext(options.services)
           );
 
-        return resultPage(originOf(request), {
+        return yield* resultPage(originOf(request), {
           ...answered,
           path: new URL(request.url, "https://ratstack.sh").pathname,
         });
