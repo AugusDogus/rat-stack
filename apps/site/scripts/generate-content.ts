@@ -703,6 +703,7 @@ const skillGroups = [
       "add-a-capability",
       "add-a-lifecycle-machine",
       "add-a-store",
+      "query-design",
       "write-a-wiki-page",
     ],
     title: "Learn by building",
