@@ -36,7 +36,10 @@
     "@rat-stack/site#generate": {
       "dependsOn": ["^build"],
       "cache": false,
-      "outputs": ["src/bundled-content.generated.ts"],
+      "outputs": [
+        "src/bundled-content.generated.ts",
+        "src/interest-pages.generated.ts"
+      ],
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/.brain/**",

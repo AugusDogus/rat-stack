@@ -68,10 +68,7 @@ const measureWorker = Effect.fn("measureWorker")(function* measureWorker(
     extraOptions: {
       ...(worker === "Mischief" ? feedbackGatewayBuild : feedbackAuthBuild),
       bundleAnalyzer: { fileName: "analysis.json", format: "json" },
-      output:
-        worker === "Mischief"
-          ? { ...feedbackGatewayBuild.output, dir: directory }
-          : { dir: directory },
+      output: { dir: directory },
     },
     id: worker,
     main: new URL(main, import.meta.url).pathname,

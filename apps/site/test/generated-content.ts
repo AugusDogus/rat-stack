@@ -22,6 +22,8 @@ import { StaticAssets } from "../src/static-assets.js";
 
 export * from "../src/bundled-content.generated.js";
 
+export * from "../src/interest-pages.generated.js";
+
 const manifest = Schema.decodeUnknownSync(
   Schema.fromJsonString(ContentAssetManifest)
 )(
