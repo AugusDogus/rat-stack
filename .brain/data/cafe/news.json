@@ -1,5 +1,18 @@
 [
   {
+    "author": {
+      "github": null,
+      "x": null
+    },
+    "date": "2026-10-13",
+    "kind": "post",
+    "repo": null,
+    "source": "https://developers.cloudflare.com/workers/framework-guides/web-apps/foldkit/",
+    "summary": "Cloudflare's Workers docs now cover Foldkit: start with create-foldkit-app, then configure Wrangler for single-page, static or server-rendered apps on Workers Assets.",
+    "title": "Foldkit framework guide in Cloudflare Workers docs",
+    "url": "https://developers.cloudflare.com/workers/framework-guides/web-apps/foldkit/"
+  },
+  {
     "kind": "post",
     "url": "https://alchemy.run/blog/2026-10-12-beta-83/",
     "title": "Alchemy 2.0.0-beta.83: the Cloudflare Birthday Week release",
@@ -17,10 +30,10 @@
   },
   {
     "kind": "release",
-    "url": "https://github.com/Effect-TS/effect/releases/tag/effect%404.0.3",
-    "title": "effect@4.0.3 released",
-    "summary": "A patch on the Effect 4 line: fixes for cached re-entry, cluster shard handoffs and DurableDeferred, plus TestCrypto.layer.",
-    "date": "2026-10-10",
+    "url": "https://github.com/Effect-TS/effect/releases/tag/effect%404.0.4",
+    "title": "effect@4.0.4 released",
+    "summary": "Patch release adds experimental effect/graphql, McpServer.layerHttpRequestScoped for serverless hosts such as Cloudflare Workers, and Retry-After handling in HttpClient retries.",
+    "date": "2026-10-13",
     "repo": "Effect-TS/effect",
     "author": {
       "github": null,
