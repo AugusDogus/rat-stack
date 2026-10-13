@@ -1,16 +1,16 @@
 [
   {
-    "kind": "release",
-    "url": "https://github.com/alchemy-run/alchemy/releases/tag/v2.0.0-beta.82",
-    "title": "Alchemy 2.0.0-beta.82",
-    "summary": "Breaking: reworks Cloudflare Basin and K2 streams, starts Durable Object containers explicitly, and replaces InstanceId with ResourceContext.",
+    "kind": "post",
+    "url": "https://alchemy.run/blog/2026-10-12-beta-83/",
+    "title": "Alchemy 2.0.0-beta.83: the Cloudflare Birthday Week release",
+    "summary": "Adds DO containers, K2 streams, Basin and KV Instant. Needs Node 24.11.1+. One-way: once deployed, Durable Object stacks can't use older Alchemy.",
     "date": "2026-10-12",
     "repo": "alchemy-run/alchemy",
     "author": {
       "github": "alchemy-run",
       "x": null
     },
-    "source": "https://www.npmjs.com/package/alchemy/v/2.0.0-beta.82",
+    "source": "https://alchemy.run/blog/2026-10-12-beta-83/",
     "engagement": {
       "stars": 1637
     }
