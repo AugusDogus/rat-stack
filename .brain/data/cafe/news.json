@@ -1,5 +1,21 @@
 [
   {
+    "kind": "launch",
+    "url": "https://github.com/acoyfellow/coil",
+    "title": "coil",
+    "summary": "A deployable showcase: Pi Durable and a Cloudflare Container share one Durable Object per thread, with an Effect 4 and Foldkit UI on Workers.",
+    "date": "2026-10-13",
+    "repo": "acoyfellow/coil",
+    "author": {
+      "github": "acoyfellow",
+      "x": "acoyfellow"
+    },
+    "source": "https://github.com/acoyfellow/coil",
+    "engagement": {
+      "stars": 20
+    }
+  },
+  {
     "author": {
       "github": null,
       "x": null

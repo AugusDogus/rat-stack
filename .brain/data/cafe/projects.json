@@ -1,5 +1,24 @@
 [
   {
+    "url": "https://github.com/acoyfellow/coil",
+    "title": "coil",
+    "summary": "One thread, one agent, one computer: Pi Durable and a Cloudflare Container in one Durable Object, with an Effect 4 and Foldkit UI.",
+    "date": "2026-10-13",
+    "repo": "acoyfellow/coil",
+    "author": {
+      "github": "acoyfellow",
+      "x": "acoyfellow"
+    },
+    "stack": {
+      "cloudflare": "wrangler.jsonc deploys Workers, Containers and Durable Objects",
+      "alchemy": null,
+      "foldkit": "package.json depends on foldkit 0.166.0",
+      "effect": "package.json depends on effect 4.0.0"
+    },
+    "stars": 20,
+    "source": "https://github.com/acoyfellow/coil"
+  },
+  {
     "url": "https://github.com/humanlayer/effect-channels",
     "title": "HumanLayer Channels",
     "summary": "Durable, ordered webhook mailboxes that put agents in Slack, GitHub and Linear without losing a message, built on Effect 4.",
