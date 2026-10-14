@@ -1579,36 +1579,34 @@ it.effect("returns 429 after API_PER_IP denies a client IP", () => {
   const apiPerIp = new FakeRateLimitBinding([true, false]);
   const bindings = fakeRateLimitBindings({ API_PER_IP: apiPerIp });
 
-  return withHandler(
-    (handler) =>
-      Effect.gen(function* testApiPerIpLimit() {
-        // oxlint-disable-next-line typescript/promise-function-async -- Fetch owns this Promise-returning test boundary.
-        const request = () =>
-          handler(
-            new Request("http://localhost/api/search", {
-              body: JSON.stringify({ limit: 1, query: "capability" }),
-              headers: {
-                "cf-connecting-ip": "192.0.2.10",
-                "content-type": "application/json",
-              },
-              method: "POST",
-            })
-          );
+  return withHandler((handler) => {
+    // oxlint-disable-next-line typescript/promise-function-async -- Fetch owns this Promise-returning test boundary.
+    const request = () =>
+      handler(
+        new Request("http://localhost/api/search", {
+          body: JSON.stringify({ limit: 1, query: "capability" }),
+          headers: {
+            "cf-connecting-ip": "192.0.2.10",
+            "content-type": "application/json",
+          },
+          method: "POST",
+        })
+      );
 
-        const allowed = yield* Effect.promise(request);
-        const denied = yield* Effect.promise(request);
+    return Effect.gen(function* testApiPerIpLimit() {
+      const allowed = yield* Effect.promise(request);
+      const denied = yield* Effect.promise(request);
 
-        expect(allowed.status).toBe(200);
-        expect(denied.status).toBe(429);
-        expectSecurityHeaders(denied, false);
-        expect(denied.headers.get("retry-after")).toBe("60");
-        expect(yield* Effect.promise(denied.text.bind(denied))).toContain(
-          "API_PER_IP rate limit exceeded; retry after 60 seconds"
-        );
-        expect(apiPerIp.keys).toEqual(["192.0.2.10", "192.0.2.10"]);
-      }),
-    bindings
-  );
+      expect(allowed.status).toBe(200);
+      expect(denied.status).toBe(429);
+      expectSecurityHeaders(denied, false);
+      expect(denied.headers.get("retry-after")).toBe("60");
+      expect(yield* Effect.promise(denied.text.bind(denied))).toContain(
+        "API_PER_IP rate limit exceeded; retry after 60 seconds"
+      );
+      expect(apiPerIp.keys).toEqual(["192.0.2.10", "192.0.2.10"]);
+    });
+  }, bindings);
 });
 
 it.effect("returns 429 before a second execute worker is created", () => {
@@ -1620,40 +1618,38 @@ it.effect("returns 429 before a second execute worker is created", () => {
     EXECUTE_PER_IP: executePerIp,
   });
 
-  return withHandler(
-    (handler) =>
-      Effect.gen(function* testExecutePerIpLimit() {
-        // oxlint-disable-next-line typescript/promise-function-async -- Fetch owns this Promise-returning test boundary.
-        const request = () =>
-          handler(
-            new Request("http://localhost/api/execute", {
-              body: JSON.stringify({
-                code: [
-                  "const found = await tools.search({ query: 'capability', limit: 1 });",
-                  "return await tools.read({ id: found.matches[0].id });",
-                ].join("\n"),
-              }),
-              headers: {
-                "cf-connecting-ip": "192.0.2.20",
-                "content-type": "application/json",
-              },
-              method: "POST",
-            })
-          );
+  return withHandler((handler) => {
+    // oxlint-disable-next-line typescript/promise-function-async -- Fetch owns this Promise-returning test boundary.
+    const request = () =>
+      handler(
+        new Request("http://localhost/api/execute", {
+          body: JSON.stringify({
+            code: [
+              "const found = await tools.search({ query: 'capability', limit: 1 });",
+              "return await tools.read({ id: found.matches[0].id });",
+            ].join("\n"),
+          }),
+          headers: {
+            "cf-connecting-ip": "192.0.2.20",
+            "content-type": "application/json",
+          },
+          method: "POST",
+        })
+      );
 
-        const allowed = yield* Effect.promise(request);
-        const denied = yield* Effect.promise(request);
+    return Effect.gen(function* testExecutePerIpLimit() {
+      const allowed = yield* Effect.promise(request);
+      const denied = yield* Effect.promise(request);
 
-        expect(allowed.status).toBe(200);
-        expect(denied.status).toBe(429);
-        expect(yield* Effect.promise(denied.text.bind(denied))).toContain(
-          "EXECUTE_PER_IP rate limit exceeded; retry after 60 seconds"
-        );
-        expect(executePerIp.keys).toEqual(["192.0.2.20", "192.0.2.20"]);
-        expect(executeGlobal.keys).toEqual(["global"]);
-      }),
-    bindings
-  );
+      expect(allowed.status).toBe(200);
+      expect(denied.status).toBe(429);
+      expect(yield* Effect.promise(denied.text.bind(denied))).toContain(
+        "EXECUTE_PER_IP rate limit exceeded; retry after 60 seconds"
+      );
+      expect(executePerIp.keys).toEqual(["192.0.2.20", "192.0.2.20"]);
+      expect(executeGlobal.keys).toEqual(["global"]);
+    });
+  }, bindings);
 });
 
 it.effect("returns an MCP tool error when EXECUTE_GLOBAL denies", () => {

@@ -43,72 +43,69 @@ const skippedByEntityLinker = new Set([
   "figure",
 ]);
 
-export const linkStackEntities = () => {
-  const visit = (node: ResponsiveTableNode, linked: Set<string>): void => {
-    if (node.tagName !== undefined && skippedByEntityLinker.has(node.tagName)) {
-      return;
+const visit = (node: ResponsiveTableNode, linked: Set<string>): void => {
+  if (node.tagName !== undefined && skippedByEntityLinker.has(node.tagName)) {
+    return;
+  }
+
+  const children = node.children ?? [];
+
+  for (let index = 0; index < children.length; index += 1) {
+    const child = children[index];
+
+    if (
+      child === undefined ||
+      (child.tagName !== undefined && skippedByEntityLinker.has(child.tagName))
+    ) {
+      continue;
     }
 
-    const children = node.children ?? [];
+    const { value } = child;
 
-    for (let index = 0; index < children.length; index += 1) {
-      const child = children[index];
+    if (child.type !== "text" || value === undefined) {
+      visit(child, linked);
+      continue;
+    }
+
+    const replacement: ResponsiveTableNode[] = [];
+    let cursor = 0;
+
+    for (const match of value.matchAll(entityPattern)) {
+      const name = match.groups?.entity;
+      const href = name === undefined ? undefined : entityHref(name);
 
       if (
-        child === undefined ||
-        (child.tagName !== undefined &&
-          skippedByEntityLinker.has(child.tagName))
+        name === undefined ||
+        href === undefined ||
+        linked.has(href) ||
+        isPlainEffect(name, value.slice(0, match.index))
       ) {
         continue;
       }
 
-      const { value } = child;
-
-      if (child.type !== "text" || value === undefined) {
-        visit(child, linked);
-        continue;
-      }
-
-      const replacement: ResponsiveTableNode[] = [];
-      let cursor = 0;
-
-      for (const match of value.matchAll(entityPattern)) {
-        const name = match.groups?.entity;
-        const href = name === undefined ? undefined : entityHref(name);
-
-        if (
-          name === undefined ||
-          href === undefined ||
-          linked.has(href) ||
-          isPlainEffect(name, value.slice(0, match.index))
-        ) {
-          continue;
+      linked.add(href);
+      replacement.push(
+        { type: "text", value: value.slice(cursor, match.index) },
+        {
+          children: [{ type: "text", value: name }],
+          properties: { href },
+          tagName: "a",
+          type: "element",
         }
-
-        linked.add(href);
-        replacement.push(
-          { type: "text", value: value.slice(cursor, match.index) },
-          {
-            children: [{ type: "text", value: name }],
-            properties: { href },
-            tagName: "a",
-            type: "element",
-          }
-        );
-        cursor = match.index + name.length;
-      }
-
-      if (replacement.length === 0) {
-        continue;
-      }
-
-      replacement.push({ type: "text", value: value.slice(cursor) });
-      children.splice(index, 1, ...replacement);
-      index += replacement.length - 1;
+      );
+      cursor = match.index + name.length;
     }
-  };
 
-  return (tree: ResponsiveTableNode) => {
-    visit(tree, new Set<string>());
-  };
+    if (replacement.length === 0) {
+      continue;
+    }
+
+    replacement.push({ type: "text", value: value.slice(cursor) });
+    children.splice(index, 1, ...replacement);
+    index += replacement.length - 1;
+  }
+};
+
+export const linkStackEntities = () => (tree: ResponsiveTableNode) => {
+  visit(tree, new Set<string>());
 };

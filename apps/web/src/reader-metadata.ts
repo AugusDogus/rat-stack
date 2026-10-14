@@ -7,6 +7,12 @@ export const escapeAttribute = (value: string): string =>
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
 
+const nameMeta = (name: string, content: string) =>
+  `<meta name="${escapeAttribute(name)}" content="${escapeAttribute(content)}">`;
+
+const propertyMeta = (name: string, content: string) =>
+  `<meta property="${escapeAttribute(name)}" content="${escapeAttribute(content)}">`;
+
 export const readerMetadataHead = (
   metadata: ReaderPageMetadata,
   origin: string
@@ -37,12 +43,6 @@ export const readerMetadataHead = (
           publisher,
           url: canonical,
         };
-
-  const nameMeta = (name: string, content: string) =>
-    `<meta name="${escapeAttribute(name)}" content="${escapeAttribute(content)}">`;
-
-  const propertyMeta = (name: string, content: string) =>
-    `<meta property="${escapeAttribute(name)}" content="${escapeAttribute(content)}">`;
 
   return [
     nameMeta("description", metadata.description),

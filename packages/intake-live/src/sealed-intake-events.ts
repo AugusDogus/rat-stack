@@ -107,33 +107,33 @@ const byActor = (statements: readonly IntakeStatement[]) => {
   return grouped;
 };
 
+const sealStatement = (key: ContactKey, statement: IntakeStatement) =>
+  Effect.gen(function* sealOne() {
+    const sealedResult =
+      statement.result === undefined
+        ? undefined
+        : yield* seal(key, yield* encodeJson(statement.result));
+
+    const plain = {
+      actor: statement.actor,
+      id: statement.id,
+      object: statement.object,
+      submissionId: statement.context.submissionId,
+      timestamp: statement.timestamp,
+      v: 1,
+      verb: statement.verb,
+    } as const;
+
+    const row: SealedStatement =
+      sealedResult === undefined ? plain : { ...plain, sealedResult };
+
+    return { id: statement.id, sealed: yield* encodeSealedStatement(row) };
+  });
+
 export const sealedIntakeEventsLayer = Layer.effect(
   IntakeEvents,
   Effect.gen(function* makeSealedIntakeEvents() {
     const vault = yield* IntakeVault;
-
-    const sealStatement = (key: ContactKey, statement: IntakeStatement) =>
-      Effect.gen(function* sealOne() {
-        const sealedResult =
-          statement.result === undefined
-            ? undefined
-            : yield* seal(key, yield* encodeJson(statement.result));
-
-        const plain = {
-          actor: statement.actor,
-          id: statement.id,
-          object: statement.object,
-          submissionId: statement.context.submissionId,
-          timestamp: statement.timestamp,
-          v: 1,
-          verb: statement.verb,
-        } as const;
-
-        const row: SealedStatement =
-          sealedResult === undefined ? plain : { ...plain, sealedResult };
-
-        return { id: statement.id, sealed: yield* encodeSealedStatement(row) };
-      });
 
     const recordContact = (
       actor: ContactRef,

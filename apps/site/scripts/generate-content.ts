@@ -283,41 +283,44 @@ const stableHeadingIds = (): ((tree: HastNode) => void) => (tree) => {
   visit(tree);
 };
 
-const linkCodeSpans =
-  (targets: ReadonlyMap<string, string>): (() => (tree: HastNode) => void) =>
-  () => {
-    const visit = (node: HastNode, insideBlock: boolean): void => {
-      const children = node.children ?? [];
+const referenceSource = (route: string) =>
+  `<LinkedFrom page="${escapeHtml(route)}" />\n\n<UnlinkedMentions page="${escapeHtml(route)}" />`;
 
-      for (const [index, child] of children.entries()) {
-        if (!insideBlock && child.tagName === "code") {
-          const href = targets.get(nodeText(child).trim());
+const linkCodeSpans = (
+  targets: ReadonlyMap<string, string>
+): (() => (tree: HastNode) => void) => {
+  const visit = (node: HastNode, insideBlock: boolean): void => {
+    const children = node.children ?? [];
 
-          if (href !== undefined) {
-            children[index] = {
-              children: [child],
-              properties: { href },
-              tagName: "a",
-              type: "element",
-            };
-            continue;
-          }
+    for (const [index, child] of children.entries()) {
+      if (!insideBlock && child.tagName === "code") {
+        const href = targets.get(nodeText(child).trim());
+
+        if (href !== undefined) {
+          children[index] = {
+            children: [child],
+            properties: { href },
+            tagName: "a",
+            type: "element",
+          };
+          continue;
         }
-
-        visit(
-          child,
-          insideBlock ||
-            child.tagName === "pre" ||
-            child.tagName === "a" ||
-            child.tagName === "th"
-        );
       }
-    };
 
-    return (tree) => {
-      visit(tree, false);
-    };
+      visit(
+        child,
+        insideBlock ||
+          child.tagName === "pre" ||
+          child.tagName === "a" ||
+          child.tagName === "th"
+      );
+    }
   };
+
+  return () => (tree) => {
+    visit(tree, false);
+  };
+};
 
 const compileName = (spec: SourceSpec) => {
   if (/\.(?:md|svx)$/u.test(spec.sourcePath)) {
@@ -2700,9 +2703,6 @@ Follow [ports and adapters](/lore/hexagonal-architecture) for provider boundarie
     LinkedFrom: linkedFromComponent(backlinkIndex),
     UnlinkedMentions: unlinkedMentionsComponent(unlinkedByTarget),
   });
-
-  const referenceSource = (route: string) =>
-    `<LinkedFrom page="${escapeHtml(route)}" />\n\n<UnlinkedMentions page="${escapeHtml(route)}" />`;
 
   const pageFooterMarkdown = (route: string) => {
     const markdown = renderSvxMarkdown(

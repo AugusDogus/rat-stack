@@ -18,6 +18,9 @@ import { RollbackReceiptSchema } from "./rollback-contracts.js";
 import type { RollbackReceipt } from "./rollback-contracts.js";
 import { RollbackRefused } from "./rollback-refused.js";
 
+const folderIn = (directory: string, profile: string) =>
+  `${directory}/${encodeURIComponent(profile)}`;
+
 export class ReceiptStore extends Context.Service<
   ReceiptStore,
   {
@@ -48,9 +51,6 @@ export class ReceiptStore extends Context.Service<
         const fs = yield* FileSystem.FileSystem;
         const paths = yield* Path.Path;
 
-        const folder = (profile: string) =>
-          `${directory}/${encodeURIComponent(profile)}`;
-
         const write = Effect.fn("ReceiptStore.write")(
           function* write(path: string, text: string) {
             yield* fs.makeDirectory(path.slice(0, path.lastIndexOf("/")), {
@@ -78,7 +78,7 @@ export class ReceiptStore extends Context.Service<
 
         const readApply = Effect.fn("ReceiptStore.readApply")(
           function* readApply(profile: string, requested?: string) {
-            let path = `${folder(profile)}/last-apply.json`;
+            let path = `${folderIn(directory, profile)}/last-apply.json`;
 
             if (requested !== undefined) {
               path = paths.isAbsolute(requested)
@@ -146,7 +146,7 @@ export class ReceiptStore extends Context.Service<
                   })
               ),
               Effect.flatMap((text) =>
-                write(`${folder(profile)}/last-apply.json`, text)
+                write(`${folderIn(directory, profile)}/last-apply.json`, text)
               )
             ),
           saveRollback: (receipt) =>
@@ -167,12 +167,12 @@ export class ReceiptStore extends Context.Service<
               );
 
               yield* write(
-                `${folder(receipt.profile)}/rollback-${time}.json`,
+                `${folderIn(directory, receipt.profile)}/rollback-${time}.json`,
                 text
               );
 
               return yield* write(
-                `${folder(receipt.profile)}/last-rollback.json`,
+                `${folderIn(directory, receipt.profile)}/last-rollback.json`,
                 text
               );
             }),
@@ -194,11 +194,14 @@ export class ReceiptStore extends Context.Service<
               );
 
               const path = yield* write(
-                `${folder(profile)}/verdict-${time}.json`,
+                `${folderIn(directory, profile)}/verdict-${time}.json`,
                 text
               );
 
-              yield* write(`${folder(profile)}/last-verdict.json`, text);
+              yield* write(
+                `${folderIn(directory, profile)}/last-verdict.json`,
+                text
+              );
 
               return paths.resolve(path);
             }),

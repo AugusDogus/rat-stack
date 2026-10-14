@@ -63,3 +63,8 @@ minimumReleaseAgeExclude:
   - "@distilled.cloud/stripe@1.0.0-rc.15"
   - "@distilled.cloud/turso@1.0.0-rc.15"
   - "@distilled.cloud/zerossl@1.0.0-rc.15"
+  - "@varlock/native-helper-darwin@1.23.0"
+  - "@varlock/native-helper-linux-arm64@1.23.0"
+  - "@varlock/native-helper-linux-x64@1.23.0"
+  - "@varlock/native-helper-win32-x64@1.23.0"
+  - varlock@1.23.0
