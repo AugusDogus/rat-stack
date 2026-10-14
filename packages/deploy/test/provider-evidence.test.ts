@@ -72,6 +72,19 @@ it.effect.prop(
     })
 );
 
+const malformedWork = (observed: HttpClient.HttpClient) =>
+  Effect.gen(function* providerFailure() {
+    const response = yield* observed.execute(
+      HttpClientRequest.put(
+        "https://api.cloudflare.com/client/v4/accounts/test/workers/scripts/Mischief"
+      )
+    );
+
+    expect(yield* response.text).toBe("not-json");
+
+    return yield* new BadRequest({ message: "No usable API diagnostic" });
+  });
+
 it.effect(
   "malformed API diagnostics do not consume or replace the provider's failure",
   () =>
@@ -85,21 +98,8 @@ it.effect(
         )
       );
 
-      const work = (observed: HttpClient.HttpClient) =>
-        Effect.gen(function* providerFailure() {
-          const response = yield* observed.execute(
-            HttpClientRequest.put(
-              "https://api.cloudflare.com/client/v4/accounts/test/workers/scripts/Mischief"
-            )
-          );
-
-          expect(yield* response.text).toBe("not-json");
-
-          return yield* new BadRequest({ message: "No usable API diagnostic" });
-        });
-
       const captured = yield* applyWithProviderEvidence(
-        work,
+        malformedWork,
         client,
         () => Effect.void
       );
