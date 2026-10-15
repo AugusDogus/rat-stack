@@ -1,5 +1,24 @@
 [
   {
+    "url": "https://github.com/MapleTechLabs/maple",
+    "title": "Maple",
+    "summary": "Open source OpenTelemetry observability platform, built on Effect and deployed with Alchemy, with its own Alchemy provider.",
+    "date": "2026-10-14",
+    "repo": "MapleTechLabs/maple",
+    "author": {
+      "github": "MapleTechLabs",
+      "x": null
+    },
+    "stack": {
+      "cloudflare": "documents Cloudflare Workers instrumentation; apps deploy through alchemy.run.ts",
+      "alchemy": "alchemy.run.ts at the root and in apps/ingest, apps/electric and apps/sandbox",
+      "foldkit": null,
+      "effect": "packages/effect-sdk and lib/effect-* packages depend on effect"
+    },
+    "stars": 1839,
+    "source": "https://github.com/MapleTechLabs/maple"
+  },
+  {
     "url": "https://github.com/acoyfellow/coil",
     "title": "coil",
     "summary": "One thread, one agent, one computer: Pi Durable and a Cloudflare Container in one Durable Object, with an Effect 4 and Foldkit UI.",
