@@ -1,5 +1,43 @@
 [
   {
+    "url": "https://github.com/acoyfellow/skin",
+    "title": "skin",
+    "summary": "An app that rewrites its own code while you use it and can't brick itself: Pi Durable, Worker Loader, Effect 4 and Foldkit.",
+    "date": "2026-10-17",
+    "repo": "acoyfellow/skin",
+    "author": {
+      "github": "acoyfellow",
+      "x": "acoyfellow"
+    },
+    "stack": {
+      "cloudflare": "wrangler.jsonc deploys Workers, Durable Objects and Worker Loader isolates",
+      "alchemy": null,
+      "foldkit": "package.json depends on foldkit 0.168.0",
+      "effect": "package.json depends on effect 4.0.0"
+    },
+    "stars": 3,
+    "source": "https://github.com/acoyfellow/skin"
+  },
+  {
+    "url": "https://github.com/acoyfellow/hark",
+    "title": "hark",
+    "summary": "A voice agent with no chat box, on your own Cloudflare account, with an Effect 4 and Foldkit UI.",
+    "date": "2026-10-16",
+    "repo": "acoyfellow/hark",
+    "author": {
+      "github": "acoyfellow",
+      "x": "acoyfellow"
+    },
+    "stack": {
+      "cloudflare": "wrangler.jsonc deploys Workers with Workers AI",
+      "alchemy": null,
+      "foldkit": "package.json depends on foldkit 0.168.0",
+      "effect": "package.json depends on effect 4.0.0"
+    },
+    "stars": 11,
+    "source": "https://github.com/acoyfellow/hark"
+  },
+  {
     "url": "https://github.com/MapleTechLabs/maple",
     "title": "Maple",
     "summary": "Open source OpenTelemetry observability platform, built on Effect and deployed with Alchemy, with its own Alchemy provider.",
