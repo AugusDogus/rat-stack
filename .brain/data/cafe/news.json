@@ -1,6 +1,51 @@
 [
   {
     "kind": "release",
+    "url": "https://github.com/Effect-TS/tsgo/releases/tag/%40effect%2Ftsgo%400.53.3",
+    "title": "@effect/tsgo 0.53.3 released",
+    "summary": "Effect language service for tsgo: apiStabilityLeak allocates less, and effect-tsgo diagnostics now reports related locations, including in JSON output.",
+    "date": "2026-10-16",
+    "repo": "Effect-TS/tsgo",
+    "author": {
+      "github": null,
+      "x": null
+    },
+    "source": "https://github.com/Effect-TS/tsgo/releases"
+  },
+  {
+    "kind": "launch",
+    "url": "https://github.com/acoyfellow/hark",
+    "title": "hark",
+    "summary": "A voice agent on your own Cloudflare account: Workers AI for thinking, Deepgram and Aura for speech, with an Effect 4 and Foldkit UI.",
+    "date": "2026-10-16",
+    "repo": "acoyfellow/hark",
+    "author": {
+      "github": "acoyfellow",
+      "x": "acoyfellow"
+    },
+    "source": "https://github.com/acoyfellow/hark",
+    "engagement": {
+      "stars": 11
+    }
+  },
+  {
+    "kind": "launch",
+    "url": "https://github.com/acoyfellow/skin",
+    "title": "skin",
+    "summary": "An app that rewrites its own code as you use it: Pi Durable builds each change in a Worker Loader isolate and checks it first.",
+    "date": "2026-10-17",
+    "repo": "acoyfellow/skin",
+    "author": {
+      "github": "acoyfellow",
+      "x": "acoyfellow"
+    },
+    "source": "https://github.com/acoyfellow/skin",
+    "engagement": {
+      "stars": 3
+    }
+  },
+  {
+    "kind": "release",
     "url": "https://github.com/Effect-TS/effect/releases/tag/effect%404.0.5",
     "title": "effect@4.0.5 released",
     "summary": "Patch release adds gzip request compression and decompression middleware, opt-in OTLP export compression, Path.resolveWithin, and redaction of sensitive URL values in HTTP spans.",
