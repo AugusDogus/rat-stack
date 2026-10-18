@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+
 import { NodeServices } from "@effect/platform-node";
 import { expect, it } from "@effect/vitest";
 import { ExecuteResult } from "@rat-stack/capability/code-mode";
@@ -384,7 +386,7 @@ it.effect(
       const sourcePath = "skills/learn-rat-stack/SKILL.md";
 
       const source = yield* fs.readFileString(
-        new URL(`../../../${sourcePath}`, import.meta.url).pathname
+        fileURLToPath(new URL(`../../../${sourcePath}`, import.meta.url))
       );
 
       const requests = yield* Effect.forEach(
