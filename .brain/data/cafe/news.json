@@ -1,6 +1,22 @@
 [
   {
     "kind": "release",
+    "url": "https://github.com/statelyai/xstate/releases/tag/%40xstate%2Feffect%401.0.0-alpha.8",
+    "title": "@xstate/effect 1.0.0-alpha.8 and xstate 6.0.0-alpha.69",
+    "summary": "@xstate/effect 1.0.0-alpha.8 renames fromEffect to createEffectLogic, matching core create*Logic names; xstate 6.0.0-alpha.69 keeps literal outputs in createAsyncLogic.",
+    "date": "2026-10-17",
+    "repo": "statelyai/xstate",
+    "author": {
+      "github": "statelyai",
+      "x": null
+    },
+    "source": "https://github.com/statelyai/xstate/releases",
+    "engagement": {
+      "stars": 30293
+    }
+  },
+  {
+    "kind": "release",
     "url": "https://github.com/Effect-TS/tsgo/releases/tag/%40effect%2Ftsgo%400.53.3",
     "title": "@effect/tsgo 0.53.3 released",
     "summary": "Effect language service for tsgo: apiStabilityLeak allocates less, and effect-tsgo diagnostics now reports related locations, including in JSON output.",
@@ -132,22 +148,6 @@
     "source": "https://github.com/humanlayer/effect-channels",
     "engagement": {
       "stars": 42
-    }
-  },
-  {
-    "kind": "release",
-    "url": "https://github.com/statelyai/xstate/releases/tag/%40xstate/effect%400.1.0-alpha.7",
-    "title": "@xstate/effect 0.1.0-alpha.7 and xstate 6.0.0-alpha.65",
-    "summary": "createEffectActor can resume from a persisted snapshot; machine.eventSchema now validates complete public input events, a breaking change for alpha users.",
-    "date": "2026-10-08",
-    "repo": "statelyai/xstate",
-    "author": {
-      "github": "statelyai",
-      "x": null
-    },
-    "source": "https://github.com/statelyai/xstate/releases/tag/xstate%406.0.0-alpha.65",
-    "engagement": {
-      "stars": 30293
     }
   },
   {
