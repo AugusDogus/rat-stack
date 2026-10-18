@@ -277,6 +277,74 @@ export const contentVersionCheck = Effect.fn("contentVersionCheck")(
   }
 );
 
+export const htmlContentVersionCheck = Effect.fn("htmlContentVersionCheck")(
+  function* htmlContentVersionCheck(
+    base: string,
+    route: string,
+    generation: string
+  ) {
+    const client = yield* HttpClient.HttpClient;
+    const observedAt = yield* Clock.currentTimeMillis;
+    const url = `${base}${route}?__rat_version=${encodeURIComponent(generation)}&__rat_probe=${observedAt}`;
+
+    return yield* runCheck(
+      `html-content-version:${route}`,
+      Effect.gen(function* observeHtmlContentVersion() {
+        const response = yield* client.execute(
+          HttpClientRequest.get(url).pipe(
+            HttpClientRequest.setHeaders({
+              accept: "text/html",
+              "accept-encoding": "identity",
+            })
+          )
+        );
+
+        const served = response.headers["x-content-generation"];
+
+        const evidence = {
+          check: `html-content-version:${route}`,
+          counts: { observed: 1 },
+          deploymentVersion: generation,
+          observedAt,
+          provenance: [
+            {
+              fetchedAt: observedAt,
+              id: route,
+              source: url,
+              status: `http=${response.status};generation=${served ?? "missing"}`,
+            },
+          ],
+        };
+
+        if (served === undefined || served.trim().length === 0) {
+          return {
+            ...evidence,
+            control: 0,
+            exitCode: 3,
+            outcome: "errored",
+            reason: "html-content-generation-header-missing",
+            status: "hold",
+          } satisfies Verdict;
+        }
+
+        const passed = response.status === 200 && served.trim() === generation;
+
+        return {
+          ...evidence,
+          control: 1,
+          reason: passed
+            ? "content-version-confirmed"
+            : "content-version-mismatch",
+          resourceVersion: served,
+          ...(passed
+            ? { exitCode: 0, outcome: "passed", status: "green" }
+            : { exitCode: 2, outcome: "failed", status: "red" }),
+        } satisfies Verdict;
+      })
+    );
+  }
+);
+
 export const contentVersionRetryDefaults = {
   deadlineMs: 120_000,
   initialDelayMs: 1000,
@@ -371,6 +439,14 @@ export const postDeployChecks = Effect.fn("postDeployChecks")(
       ),
       yield* settledContentVersionCheck(
         contentVersionCheck(url, "/index.md", contentGeneration),
+        retry
+      ),
+      yield* settledContentVersionCheck(
+        htmlContentVersionCheck(url, "/", contentGeneration),
+        retry
+      ),
+      yield* settledContentVersionCheck(
+        htmlContentVersionCheck(url, "/news", contentGeneration),
         retry
       ),
     ];

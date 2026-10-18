@@ -138,6 +138,8 @@ it.layer(PreparedReaderPages.layer)((test) => {
             page.page.path === "/" || index === preview.seed % prepared.length
         );
 
+        const generationRule = `X-Content-Generation: ${pages[0]?.page.generation}`;
+
         const routes = pages.map((page) => page.page.path);
 
         const noStoreRules = routes.flatMap((route) =>
@@ -238,6 +240,7 @@ it.layer(PreparedReaderPages.layer)((test) => {
           "/*",
           "X-Robots-Tag: noindex",
           `X-Preview-Commit: ${commit}`,
+          generationRule,
           ...noStoreRules,
         ]);
 
@@ -257,16 +260,12 @@ it.layer(PreparedReaderPages.layer)((test) => {
           )
         );
 
-        if (productionRules.length === 0) {
-          expect(yield* fs.exists(headerPath)).toBe(false);
-        } else {
-          expect(
-            (yield* fs.readFileString(headerPath))
-              .trim()
-              .split("\n")
-              .map((line) => line.trim())
-          ).toEqual(productionRules);
-        }
+        expect(
+          (yield* fs.readFileString(headerPath))
+            .trim()
+            .split("\n")
+            .map((line) => line.trim())
+        ).toEqual(["/*", generationRule, ...productionRules]);
 
         for (const page of pages) {
           yield* assertMetadata(

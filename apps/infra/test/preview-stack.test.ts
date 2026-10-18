@@ -68,6 +68,7 @@ it.effect.prop(
           expect(websiteProps.env.PREVIEW_COMMIT).toBe("a".repeat(40));
           expect(Object.keys(websiteProps.env).toSorted()).toEqual([
             "BACKEND",
+            "CONTENT_GENERATION",
             "PREVIEW_COMMIT",
           ]);
 

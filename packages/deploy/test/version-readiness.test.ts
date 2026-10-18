@@ -4,7 +4,11 @@ import { DateTime, Effect, Schema } from "effect";
 import * as HttpClient from "effect/http/HttpClient";
 import * as HttpClientResponse from "effect/http/HttpClientResponse";
 
-import { contentVersionCheck, settledReadinessCheck } from "../src/checks.js";
+import {
+  contentVersionCheck,
+  htmlContentVersionCheck,
+  settledReadinessCheck,
+} from "../src/checks.js";
 
 const Signal = Schema.Literals(["pass", "site-error", "stale", "missing-time"]);
 
@@ -117,6 +121,48 @@ it.effect.prop(
       if (missing) {
         expect(result.control).toBe(0);
         expect(result.status).toBe("hold");
+      }
+    }),
+  { arbitrary: { runs: 100 } }
+);
+
+it.effect.prop(
+  "served HTML must carry the current generation; a stale, missing or failed page never passes",
+  {
+    matches: Schema.Boolean,
+    missing: Schema.Boolean,
+    ok: Schema.Boolean,
+  },
+  ({ matches, missing, ok }) =>
+    Effect.gen(function* test() {
+      const client = HttpClient.make((request) => {
+        expect(request.headers.accept).toBe("text/html");
+
+        const generation = matches ? "expected-generation" : "old-generation";
+
+        return Effect.succeed(
+          HttpClientResponse.fromWeb(
+            request,
+            new Response("<html></html>", {
+              headers: missing ? {} : { "x-content-generation": generation },
+              status: ok ? 200 : 503,
+            })
+          )
+        );
+      });
+
+      const result = yield* htmlContentVersionCheck(
+        "https://example.test",
+        "/news",
+        "expected-generation"
+      ).pipe(Effect.provideService(HttpClient.HttpClient, client));
+
+      expect(gateOutcome(result) === "pass").toBe(ok && matches && !missing);
+
+      if (missing) {
+        expect(result.status).toBe("hold");
+      } else if (!matches) {
+        expect(result.reason).toBe("content-version-mismatch");
       }
     }),
   { arbitrary: { runs: 100 } }

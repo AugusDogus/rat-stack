@@ -183,6 +183,9 @@ it.effect.prop(
           "cache-control": "no-store",
           "content-type": "application/json",
           etag: `W/"${matchesGeneration ? "test-generation" : "old-generation"}:default:${encodeURIComponent(path)}"`,
+          "x-content-generation": matchesGeneration
+            ? "test-generation"
+            : "old-generation",
         });
 
         if ((workshop && !pageIndexable) || (transaction && subpathsNoindex)) {
@@ -222,8 +225,8 @@ it.effect.prop(
           sitemapListed &&
           subpathsNoindex
       );
-      expect(requests).toHaveLength(broken ? 26 : 25);
-      expect(results).toHaveLength(25);
+      expect(requests).toHaveLength(broken ? 28 : 27);
+      expect(results).toHaveLength(27);
     }).pipe(Effect.scoped),
   { arbitrary: { runs: 50 } }
 );

@@ -1,9 +1,12 @@
+import { fileURLToPath } from "node:url";
+
 import PreviewRpcBackend from "@rat-stack/site/preview-rpc-worker";
 import RpcBackend from "@rat-stack/site/rpc-worker";
 import * as Cloudflare from "alchemy/Cloudflare";
 import { Stage } from "alchemy/Stage";
 import * as Config from "effect/Config";
 import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
 import * as Schema from "effect/Schema";
 
 import {
@@ -11,11 +14,35 @@ import {
   traceSettings,
 } from "../../site/src/observability.js";
 
+const contentManifestPath = fileURLToPath(
+  new URL("../../site/dist/content/manifest.json", import.meta.url)
+);
+
+const contentGeneration = Effect.gen(function* contentGeneration() {
+  const fs = yield* FileSystem.FileSystem;
+
+  const manifest = yield* fs
+    .readFileString(contentManifestPath)
+    .pipe(
+      Effect.flatMap(
+        Schema.decodeEffect(
+          Schema.fromJsonString(
+            Schema.Struct({ generation: Schema.NonEmptyString })
+          )
+        )
+      ),
+      Effect.orDie
+    );
+
+  return manifest.generation;
+});
+
 export class Website extends Cloudflare.Website.Foldkit<Website>()(
   "Website",
   Effect.gen(function* websiteProps() {
     const traces = yield* traceSettings.pipe(Effect.orDie);
     const stage = yield* Stage;
+    const generation = yield* contentGeneration;
     const preview = /^pr-[1-9][0-9]*$/u.test(stage);
 
     const props = {
@@ -32,7 +59,10 @@ export class Website extends Cloudflare.Website.Foldkit<Website>()(
           "/prompts/*",
         ],
       },
-      env: { BACKEND: preview ? PreviewRpcBackend : RpcBackend },
+      env: {
+        BACKEND: preview ? PreviewRpcBackend : RpcBackend,
+        CONTENT_GENERATION: generation,
+      },
       observability: traceObservability(traces),
       rootDir: "../web",
       workersDev: false,
