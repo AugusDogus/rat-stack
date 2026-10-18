@@ -1218,7 +1218,7 @@
   {
     "repo": "pkishorez/monorepo",
     "tier": "B",
-    "reason": "The kstack app resolves all four families from its root catalog. No focused pattern study yet.",
+    "reason": "The kstack root catalog pins all four families; platforms/web-platform declares Effect, XState and the bridge. No focused pattern study yet.",
     "versions": {
       "effect": "4.0.0 (catalog)",
       "alchemy": "2.0.0-beta.80 (catalog)",
