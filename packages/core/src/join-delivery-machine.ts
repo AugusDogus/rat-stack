@@ -1,7 +1,7 @@
 import { watchActor } from "@rat-stack/capability/actor-watch";
 import {
   createEffectActor,
-  fromEffect,
+  createEffectLogic,
   join,
   setupEffect,
 } from "@xstate/effect";
@@ -21,7 +21,7 @@ interface DeliveryContext extends DeliveryInput {
   readonly result: IntakeResult;
 }
 
-const deliver = fromEffect({
+const deliver = createEffectLogic({
   effect: ({ input }) =>
     Effect.gen(function* deliverContact() {
       const contacts = yield* JoinContactStore;
@@ -52,7 +52,7 @@ const deliver = fromEffect({
   schemas: { input: DeliveryInputSchema },
 });
 
-const wait = fromEffect({
+const wait = createEffectLogic({
   effect: ({ input }) => Effect.sleep(Duration.seconds(input.seconds)),
   schemas: { input: Schema.Struct({ seconds: Schema.Finite }) },
 });

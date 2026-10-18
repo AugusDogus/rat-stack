@@ -31,8 +31,8 @@ minimumReleaseAgeExclude:
   - "@effect/sql-d1@4.0.0"
   - "@effect/sql-sqlite-do@4.0.0"
   - "@effect/vitest@4.0.0"
-  - xstate@6.0.0-alpha.65
-  - "@xstate/effect@0.1.0-alpha.7"
+  - xstate@6.0.0-alpha.69
+  - "@xstate/effect@1.0.0-alpha.8"
   - "@earendil-works/chord@0.86.1"
   - "@earendil-works/pi-agent-core@0.86.1"
   - "@earendil-works/pi-ai@0.86.1"

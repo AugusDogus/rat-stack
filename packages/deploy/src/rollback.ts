@@ -3,7 +3,7 @@ import { defineContract } from "@rat-stack/capability/contract";
 import { implement } from "@rat-stack/capability/implement";
 import {
   createEffectActor,
-  fromEffect,
+  createEffectLogic,
   join,
   setupEffect,
 } from "@xstate/effect";
@@ -31,13 +31,13 @@ interface RollbackContext {
   readonly source?: RollbackSource;
 }
 
-const load = fromEffect({
+const load = createEffectLogic({
   effect: ({ input }) =>
     RollbackRunner.use((runner) => runner.load(input)).pipe(Effect.result),
   schemas: { input: RollbackInputSchema },
 });
 
-const restore = fromEffect({
+const restore = createEffectLogic({
   effect: ({ input }) =>
     input === undefined
       ? Effect.die("rollback-source-missing")
@@ -47,7 +47,7 @@ const restore = fromEffect({
   schemas: { input: Schema.UndefinedOr(RollbackSourceSchema) },
 });
 
-const check = fromEffect({
+const check = createEffectLogic({
   effect: ({ input }) =>
     input === undefined
       ? Effect.die("rollback-receipt-missing")
@@ -55,7 +55,7 @@ const check = fromEffect({
   schemas: { input: Schema.UndefinedOr(RollbackReceiptSchema) },
 });
 
-const record = fromEffect({
+const record = createEffectLogic({
   effect: ({ input }) =>
     input === undefined
       ? Effect.die("rollback-receipt-missing")

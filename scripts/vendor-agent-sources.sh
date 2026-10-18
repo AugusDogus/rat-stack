@@ -68,9 +68,10 @@ EFFECT_VERSION="$(pin packages/core/package.json effect)"
 XSTATE_VERSION="$(pin packages/core/package.json xstate)"
 XSTATE_EFFECT_VERSION="$(pin packages/core/package.json @xstate/effect)"
 XSTATE_EFFECT_REF="@xstate/effect@${XSTATE_EFFECT_VERSION}"
+XSTATE_REF="xstate@${XSTATE_VERSION}"
 
 if ! git ls-remote --exit-code --refs https://github.com/statelyai/xstate.git "refs/tags/${XSTATE_EFFECT_REF}" >/dev/null; then
-  echo "Cannot resolve required ${XSTATE_EFFECT_REF}; refusing a core-tag fallback." >&2
+  echo "Cannot resolve required ${XSTATE_EFFECT_REF}; refusing an unverified bridge source." >&2
   exit 1
 fi
 ALCHEMY_VERSION="$(pin apps/infra/package.json alchemy)"
@@ -81,13 +82,13 @@ clone_source Effect-TS effect https://github.com/Effect-TS/effect.git "effect@${
   "Effect v4 monorepo matching packages/core effect@${EFFECT_VERSION}."
 clone_source kitlangton effect-solutions https://github.com/kitlangton/effect-solutions.git main \
   "Idiomatic Effect patterns guide (Kit Langton)."
-clone_source statelyai xstate https://github.com/statelyai/xstate.git "${XSTATE_EFFECT_REF}" \
-  "Effect bridge matching packages/core @xstate/effect@${XSTATE_EFFECT_VERSION}; companion core pin is xstate@${XSTATE_VERSION}."
+clone_source statelyai xstate https://github.com/statelyai/xstate.git "${XSTATE_REF}" \
+  "XState core matching packages/core xstate@${XSTATE_VERSION}; bridge must match @xstate/effect@${XSTATE_EFFECT_VERSION}."
 
 SOURCE_XSTATE_VERSION="$(node -p "require('${PREFIX}/statelyai/xstate/packages/core/package.json').version")"
 SOURCE_XSTATE_EFFECT_VERSION="$(node -p "require('${PREFIX}/statelyai/xstate/packages/xstate-effect/package.json').version")"
 if [[ "$SOURCE_XSTATE_VERSION" != "$XSTATE_VERSION" || "$SOURCE_XSTATE_EFFECT_VERSION" != "$XSTATE_EFFECT_VERSION" ]]; then
-  echo "XState source versions do not match both pins; refresh ${XSTATE_EFFECT_REF}." >&2
+  echo "XState source versions do not match both pins; refresh ${XSTATE_REF}." >&2
   exit 1
 fi
 clone_source alchemy-run alchemy https://github.com/alchemy-run/alchemy.git "v${ALCHEMY_VERSION}" \

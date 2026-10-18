@@ -3,7 +3,7 @@ import { ApprovalDenied } from "@rat-stack/capability/approval";
 import type { Around } from "@rat-stack/capability/call-watch";
 import {
   createEffectActor,
-  fromEffect,
+  createEffectLogic,
   join,
   setupEffect,
 } from "@xstate/effect";
@@ -105,10 +105,10 @@ const observeRun = <A, E, R>(
   run: Effect.Effect<A, E, R>
 ) =>
   Effect.gen(function* runFlagAttemptMachine() {
-    const prepare = fromEffect(prepareAttempt(input).pipe(Effect.exit));
-    const execute = fromEffect(run.pipe(Effect.exit));
+    const prepare = createEffectLogic(prepareAttempt(input).pipe(Effect.exit));
+    const execute = createEffectLogic(run.pipe(Effect.exit));
 
-    const complete = fromEffect({
+    const complete = createEffectLogic({
       effect: ({ input: change }) =>
         Effect.gen(function* completeAttempt() {
           const journal = yield* FlagJournal;

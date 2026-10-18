@@ -7,7 +7,7 @@ import {
 import type { ConceptProgress, LearnEvent } from "@rat-stack/core/learn";
 import {
   createEffectActor,
-  fromEffect,
+  createEffectLogic,
   send,
   setupEffect,
   waitFor,
@@ -24,7 +24,7 @@ interface ProgressContext {
   readonly hasExplicitTime: boolean;
 }
 
-const observeTime = fromEffect(Clock.currentTimeMillis);
+const observeTime = createEffectLogic(Clock.currentTimeMillis);
 
 export const progressMachine = setupEffect({
   actors: { observeTime },

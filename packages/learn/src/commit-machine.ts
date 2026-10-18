@@ -3,7 +3,7 @@ import { LearnEventSchema } from "@rat-stack/core/learn";
 import type { LearnEvent, LearnerProgressError } from "@rat-stack/core/learn";
 import {
   createEffectActor,
-  fromEffect,
+  createEffectLogic,
   join,
   setupEffect,
 } from "@xstate/effect";
@@ -17,7 +17,7 @@ interface CommitContext {
   readonly error: LearnerProgressError | undefined;
 }
 
-const append = fromEffect({
+const append = createEffectLogic({
   effect: ({ input }) => LearnEventWriter.use((writer) => writer.append(input)),
   schemas: { input: LearnEventSchema },
 });

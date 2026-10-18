@@ -137,8 +137,8 @@ const peers = Schema.decodeSync(PeerRows)([]);
 const registry = peerComponentRegistry(peers, {
   alchemy: "2.0.0-beta.83",
   effect: "4.0.0",
-  xstate: "6.0.0-alpha.65",
-  xstateEffect: "0.1.0-alpha.7",
+  xstate: "6.0.0-alpha.69",
+  xstateEffect: "1.0.0-alpha.8",
 });
 
 for (const [source, directive, agentText] of [
