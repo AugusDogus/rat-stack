@@ -162,7 +162,7 @@ An uncertain write needs a storage check before another attempt.
 Effect Schema describes accepted values and their runtime checks.
 The event schema defines the available observations:
 
-```ts repo=rat-stack path=packages/core/src/learn-model.ts at=cec3fcc34c976f007d1157af756c89a951306194 lines=33-47 title="Explicit learning events"
+```ts repo=rat-stack path=packages/core/src/learn-model.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=66-80 title="Explicit learning events"
 
 ```
 

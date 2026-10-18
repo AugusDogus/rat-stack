@@ -66,10 +66,10 @@ Decode unknown input at the boundary. Encode results through the declared output
 A schema's `Type` describes its decoded value; `Encoded` describes its external representation.
 Those representations can differ when a codec transforms values.
 
-```ts repo=rat-stack path=packages/core/src/contracts.ts at=65e9465f38092e24486392f22c08f45d61230c20 lines=15-26
+```ts repo=rat-stack path=packages/core/src/contracts.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=115-126
 ```
 
-Content kinds have three accepted values. A match must carry the declared fields and a finite score.
+Content kinds have four accepted values. A match must carry the declared fields and a finite score.
 
 Derive the TypeScript type from the schema rather than maintaining a second interface.
 Use `Schema.Union` when accepted alternatives have different shapes, including tagged failures.
@@ -79,7 +79,7 @@ Use `Schema.Union` when accepted alternatives have different shapes, including t
 A contract declares an action's input, output, and failures.
 The file-inspection contract names its input, result, and failure.
 
-```ts repo=rat-stack path=packages/core/src/contracts.ts at=65e9465f38092e24486392f22c08f45d61230c20 lines=155-163
+```ts repo=rat-stack path=packages/core/src/contracts.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=255-263
 ```
 
 The schemas check values at runtime.
@@ -89,7 +89,7 @@ The schemas check values at runtime.
 `Schema.decodeUnknownEffect` accepts unknown input and keeps decoding failures in the Effect error channel.
 Our code-mode invoker calls the handler only after decoding succeeds.
 
-```ts repo=rat-stack path=packages/capability/src/to-code-mode.ts at=65e9465f38092e24486392f22c08f45d61230c20 lines=148-156
+```ts repo=rat-stack path=packages/capability/src/to-code-mode.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=208-221
 ```
 
 Rejected input becomes `InvalidInput`. The domain handler receives the decoded value after validation.

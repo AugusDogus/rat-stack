@@ -59,7 +59,7 @@ The CLI uses `inspectFile`. The hosted site uses a separate content registry.
 
 The [contract](/systems/capabilities) names the action and its input, output, and failure schemas.
 
-```ts repo=rat-stack path=packages/core/src/contracts.ts at=5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b lines=155-163 {155,158-163}
+```ts repo=rat-stack path=packages/core/src/contracts.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=255-263 {255,258-263}
 
 ```
 
@@ -69,7 +69,7 @@ The [contract](/systems/capabilities) names the action and its input, output, an
 
 `implement` binds the contract to `runInspectMachine`. The registry includes the resulting [capability](/systems/capabilities).
 
-```ts repo=rat-stack path=packages/core/src/inspect-file.ts at=5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b lines=7-11 {7-9,11}
+```ts repo=rat-stack path=packages/core/src/inspect-file.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=10-22 {10-12,14-15}
 
 ```
 
@@ -79,13 +79,13 @@ The handler starts a machine to read the file.
 
 `FileInspector.make` captures the file system. Its `inspect` method reads bytes and maps file errors to `FileStatsError`.
 
-```ts repo=rat-stack path=packages/core/src/file-inspector.ts at=5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b lines=14-29 {15,20-24,28}
+```ts repo=rat-stack path=packages/core/src/file-inspector.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=14-29 {15,20-24,28}
 
 ```
 
 The service exposes its [Layer](/lore/layer-constructor-pattern) beside the implementation. This follows [hexagonal architecture](/lore/hexagonal-architecture): composition supplies the file-system dependency.
 
-```ts repo=rat-stack path=packages/core/src/file-inspector.ts at=5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b lines=31-35 {34}
+```ts repo=rat-stack path=packages/core/src/file-inspector.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=31-35 {34}
 
 ```
 
@@ -95,27 +95,27 @@ Callers ask the service to inspect a path. Composition chooses the file-system i
 
 A declared `createEffectLogic` actor calls `FileInspector`.
 
-```ts repo=rat-stack path=packages/core/src/inspect-machine.ts at=5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b lines=26-30 {26,28}
+```ts repo=rat-stack path=packages/core/src/inspect-machine.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=26-30 {26,28}
 
 ```
 
 The machine starts in `reading`. It finishes in `inspected` or `unreadable`.
 
-```ts repo=rat-stack path=packages/core/src/inspect-machine.ts at=5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b lines=40-64 {40,43,51,57,59,62}
+```ts repo=rat-stack path=packages/core/src/inspect-machine.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=40-64 {40,43,51,57,59,62}
 
 ```
 
 ### 5. Project the registered actions
 
-The command-line interface (CLI) projects the same `capabilities` list for each server interface.
+The command-line interface (CLI) projects capability lists for each server interface. HTTP uses stateless learning capabilities. MCP and code mode use their local learning counterparts. All three include `inspectFile`.
 
-```ts repo=rat-stack path=apps/cli/src/surfaces.ts at=5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b lines=21-32 {21,23,25,29}
+```ts repo=rat-stack path=apps/cli/src/surfaces.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=25-33,40-51 {25-28,30-33,40,42,44,48}
 
 ```
 
 The RPC [projection](/lore/one-capability-every-surface) derives contracts from its supplied capabilities.
 
-```ts repo=rat-stack path=packages/capability/src/to-rpc.ts at=5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b lines=24-27 {24,27}
+```ts repo=rat-stack path=packages/capability/src/to-rpc.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=24-27 {24,27}
 
 ```
 
@@ -125,13 +125,13 @@ A projection takes a registry and reuses its domain handlers.
 
 `toCommand` derives each command. `inspectFile` also gets the `stats` alias.
 
-```ts repo=rat-stack path=apps/cli/src/command.ts at=5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b lines=20-30 {23-27}
+```ts repo=rat-stack path=apps/cli/src/command.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=22-35 {25-28}
 
 ```
 
 The entry point supplies the service [Layer](/lore/layer-constructor-pattern) and Node services. It denies [approval](/systems/capabilities) by default.
 
-```ts repo=rat-stack path=apps/cli/src/cli.ts at=5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b lines=16-22 {18,20}
+```ts repo=rat-stack path=apps/cli/src/cli.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=22-32 {24,30}
 
 ```
 
@@ -141,7 +141,7 @@ The command keeps the shared handler.
 
 An Alchemy Stack groups one cloud infrastructure program and its outputs. Alchemy declares the Stack, Cloudflare providers, and state. The Stack includes `Mischief` and `Website`.
 
-```ts repo=rat-stack path=apps/infra/alchemy.run.ts at=5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b lines=12-18,114-119 {12,15-16,114-115}
+```ts repo=rat-stack path=apps/infra/alchemy.run.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=16-22,118-129 {16,19-20,118,120}
 
 ```
 

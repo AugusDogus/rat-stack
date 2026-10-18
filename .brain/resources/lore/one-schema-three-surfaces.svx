@@ -84,12 +84,13 @@ Contract (Effect schemas + one handler)
 
 [`apps/cli/src/surfaces.ts`](https://github.com/joelhooks/rat-stack/blob/main/apps/cli/src/surfaces.ts) composes the projections. [`command.ts`](https://github.com/joelhooks/rat-stack/blob/main/apps/cli/src/command.ts) maps registered capabilities to commands. It also prints the generated OpenAPI document.
 
-Source: [`apps/cli/src/surfaces.ts` at `a646f7ffd00273d85fbe1d905d9cdb194fdc0f60`, lines 21–25](https://github.com/joelhooks/rat-stack/blob/a646f7ffd00273d85fbe1d905d9cdb194fdc0f60/apps/cli/src/surfaces.ts#L21-L25).
+Source: [`apps/cli/src/surfaces.ts` at `b4d6b8f499e57bc76914ad70df3a0c99751ae28c`, lines 25–44](https://github.com/joelhooks/rat-stack/blob/b4d6b8f499e57bc76914ad70df3a0c99751ae28c/apps/cli/src/surfaces.ts#L25-L44).
 
-```ts repo=rat-stack path=apps/cli/src/surfaces.ts at=a646f7ffd00273d85fbe1d905d9cdb194fdc0f60 lines=21-25
+```ts repo=rat-stack path=apps/cli/src/surfaces.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=25-33,40-44
 ```
 
-Each call receives the same capability list.
+HTTP uses stateless learning capabilities. MCP and code mode use local learning capabilities.
+Both lists include the same core capabilities, including `inspectFile`.
 
 One HttpApi definition supplies the HTTP implementation and its OpenAPI document. The broader shared definition is the capability contract. This split avoids three independently maintained schemas.
 

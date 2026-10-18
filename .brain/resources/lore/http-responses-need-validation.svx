@@ -62,7 +62,7 @@ Use the `effect/http` modules.
 The deployment checker decodes tool discovery through `ToolsResponse`.
 It also requires status 200 and the expected tool names.
 
-```ts repo=rat-stack path=packages/deploy/src/checks.ts at=65e9465f38092e24486392f22c08f45d61230c20 lines=141-150
+```ts repo=rat-stack path=packages/deploy/src/checks.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=600-609
 ```
 
 Use the in-memory fixture below when learning.

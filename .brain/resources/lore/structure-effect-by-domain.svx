@@ -129,7 +129,7 @@ See [service construction](/lore/services-capture-dependencies) for the full pat
 The composition root chooses implementations and supplies the application's services and their dependencies.
 Give each entrypoint its own root. Our CLI assembles dependencies before running the program.
 
-```ts repo=rat-stack path=apps/cli/src/cli.ts at=54d356037c994f89698760a4727be71d0005a087 lines=16-25
+```ts repo=rat-stack path=apps/cli/src/cli.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=22-35
 ```
 
 `Effect.provide` resolves requirements before `NodeRuntime.runMain` runs the final Effect.
