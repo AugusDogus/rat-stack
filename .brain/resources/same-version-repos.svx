@@ -24,6 +24,41 @@ The Oct 9 refresh checks all 29 existing peers and adds 21 verified public proje
 Alchemy moves to beta.81. Several peers use stable Effect 4.0.1 or 4.0.2. rat-stack keeps Effect 4.0.0 to satisfy Foldkit's exact peers.
 Patterns below keep their original source snapshots and study dates.
 
+## XState refresh
+
+Checked 2026-10-18 after rat-stack moves to XState `6.0.0-alpha.69` and `@xstate/effect` `1.0.0-alpha.8`.
+All 50 existing peers remain. Five verified public projects join at B. Existing tiers stay unchanged.
+The [roster](./peers) records exact versions and pinned source paths.
+
+### Heb-stack: retain the lifecycle reference; reject API copying
+
+Source: [check machine](https://github.com/Hebilicious/heb-stack/blob/278ffefcc0ac89387a8bf73ffbd191a750a887e0/packages/primes/src/check-machine.ts).
+Its catalog pins Effect `4.0.0`, XState `6.0.0-alpha.63`, and bridge `0.1.0-alpha.6`.
+`CHECK` re-enters `checking`. `RETRY` returns from `failed` to `checking`.
+The declared actor uses `fromEffect`.
+Keep this lifecycle reference. Do not copy its actor declaration into our newer bridge API.
+No implementation changes follow from this study.
+
+### Clankerbox: retain declared actors; reject the old callback form
+
+Source: [host lifecycle](https://github.com/gjermundgaraba/clankerbox/blob/f3aa602b13d588e1b56f9b601a1fac5a94525dba/packages/host/src/lifecycle.ts).
+Its catalog pins Effect `4.0.5`, XState `6.0.0-alpha.66`, and bridge `0.1.0-alpha.7`.
+The lifecycle declares observe, make, start, join, stop, and remove actors in `setupEffect`.
+These actors use `fromEffect`, including callback forms.
+Keep the declared-actor reference. Reject direct API copying; rat-stack now uses `createEffectLogic`.
+No new pattern is adopted.
+
+### Lute: retain the pure interaction seam
+
+Source: [player statechart](https://github.com/journeyWorker/lute/blob/3e6d8f5da028788b661824950ad41177b79742f6/packages/player/src/machine/playerMachine.ts).
+Its player manifest pins Effect `4.0.2`, XState `6.0.0-alpha.65`, and bridge `0.1.0-alpha.7`.
+The interaction chart imports `setup` and `types` from XState and emits director commands.
+Keep this pure statechart reference. It does not show how to migrate an Effect actor declaration.
+No new pattern is adopted.
+
+The local-studio and pi-cf additions have verified manifests or lockfiles, without a runtime study.
+The search is bounded; it does not establish that these are all public bridge consumers.
+
 ## Patterns
 
 ### Browser RPC behind a private Worker binding — adopt

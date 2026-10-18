@@ -82,7 +82,7 @@ Measure production limits separately from these generated test counts.
 The sandbox writes queued input to a child process through a scoped fiber: child work that stops when its owning Scope closes.
 A fiber is an independently running Effect. A Scope owns cleanup.
 
-```ts repo=rat-stack path=packages/capability/src/sandbox-subprocess.ts at=65e9465f38092e24486392f22c08f45d61230c20 lines=224-229
+```ts repo=rat-stack path=packages/capability/src/sandbox-subprocess.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=237-242
 ```
 
 The checked ownership test starts a child that waits indefinitely.
@@ -101,7 +101,7 @@ Different fork operations carry different ownership rules; do not treat their na
 The sandbox decodes stdout, splits it into lines, and interprets each protocol message with an Effect.
 Its consumer stops after the first completed outcome.
 
-```ts repo=rat-stack path=packages/capability/src/sandbox-subprocess.ts at=65e9465f38092e24486392f22c08f45d61230c20 lines=241-253,276-280
+```ts repo=rat-stack path=packages/capability/src/sandbox-subprocess.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=254-267,289-298
 ```
 
 `Stream.mapEffect` keeps decoding and dispatch in the stream description. The consumer does not launch eager Promises for each line.

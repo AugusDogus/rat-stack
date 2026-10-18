@@ -500,10 +500,10 @@ it.effect(
         expect(skillHtml).toContain("Trace one action");
         expect(skillHtml).not.toContain("description:");
         expect(skillHtml).toContain(
-          '<a href="https://github.com/joelhooks/rat-stack/blob/5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b/packages/core/src/inspect-file.ts#L7-L11">packages/core/src/inspect-file.ts · 5c0f78e0</a>'
+          '<a href="https://github.com/joelhooks/rat-stack/blob/b4d6b8f499e57bc76914ad70df3a0c99751ae28c/packages/core/src/inspect-file.ts#L10-L22">packages/core/src/inspect-file.ts · b4d6b8f4</a>'
         );
         expect(skillHtml).toContain(
-          '<a href="https://github.com/joelhooks/rat-stack/blob/5c0f78e03d69ff9ea00f6b95d02cc36a3de91a0b/apps/cli/src/surfaces.ts#L21-L32">apps/cli/src/surfaces.ts · 5c0f78e0</a>'
+          '<a href="https://github.com/joelhooks/rat-stack/blob/b4d6b8f499e57bc76914ad70df3a0c99751ae28c/apps/cli/src/surfaces.ts#L25-L51">apps/cli/src/surfaces.ts · b4d6b8f4</a>'
         );
         expect(skillHtml).toContain(
           '<a href="/AGENTS.md"><code>AGENTS.md</code></a>'

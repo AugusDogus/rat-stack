@@ -96,7 +96,7 @@ Use `catchTags` when several tagged failures need different handlers.
 
 The CLI reports the inspection failure, then fails again:
 
-```ts repo=rat-stack path=apps/cli/src/cli.ts at=d88169f85b736dd49994e07b475fb8c26d62d191 lines=15-17
+```ts repo=rat-stack path=apps/cli/src/cli.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=19-21
 ```
 
 A fallback is appropriate only when its value is a valid domain result.

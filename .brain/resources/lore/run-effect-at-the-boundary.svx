@@ -71,7 +71,7 @@ The CLI's composition root supplies requirements before running its program.
 
 The development backend already uses a router bridge:
 
-```ts repo=rat-stack path=apps/web/src/dev/backend.ts at=65e9465f38092e24486392f22c08f45d61230c20 lines=9-18
+```ts repo=rat-stack path=apps/web/src/dev/backend.ts at=b4d6b8f499e57bc76914ad70df3a0c99751ae28c lines=9-16
 ```
 
 `toWebHandler` also returns a disposal function.
