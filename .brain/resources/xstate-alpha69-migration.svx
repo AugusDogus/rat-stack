@@ -1,0 +1,42 @@
+---
+title: XState alpha.69 migration
+summary: Exact pins, upstream compatibility checks, and the source mirror choice.
+---
+
+# XState alpha.69 migration
+
+The runtime pins are `xstate@6.0.0-alpha.69` and `@xstate/effect@1.0.0-alpha.8`.
+Effect stays at `4.0.0`. The bridge peers accept Effect `^4.0.0` and XState `^6.0.0-alpha.68`.
+
+## Upstream changes
+
+- [Alpha.66](https://github.com/statelyai/xstate/releases/tag/xstate%406.0.0-alpha.66) fixes entry, exit, and declaration inference.
+- [Alpha.67 changelog](https://github.com/statelyai/xstate/blob/xstate%406.0.0-alpha.69/packages/core/CHANGELOG.md#600-alpha67) renames executable action types and freezes plain context objects in development. State inputs leave with their states.
+- [Alpha.68](https://github.com/statelyai/xstate/releases/tag/xstate%406.0.0-alpha.68) renames public APIs and built-in events. Actor references serialize as `{ $actor: address }`. Persisted timers become lists.
+- [Alpha.69](https://github.com/statelyai/xstate/releases/tag/xstate%406.0.0-alpha.69) fixes literal output inference in `createAsyncLogic`.
+- [Bridge alpha.8](https://github.com/statelyai/xstate/releases/tag/%40xstate/effect%401.0.0-alpha.8) replaces the three `fromEffect*` constructors with `createEffect*Logic` constructors.
+
+## Repository impact
+
+- Rename declared Effect logic in core, deploy, flags, learn, and the learning card.
+- Keep `Stream.fromEffect` in request incidents. It belongs to Effect, not the bridge.
+- Update `xstate-effect/no-inline-effect` for all three constructors. Real Oxlint fixtures cover each inline spawn and the declared alternative.
+- `rat-stack-patterns/watch-effect-actors` already checks `createEffectActor`. That name does not change.
+- No runtime code imports the removed core APIs or executable action types.
+- No runtime code restores XState snapshots or reads timer records, actor-reference envelopes, or state inputs.
+- Existing model and lifecycle tests exercise completion, failure, retry, and scoped actor execution. The inspection model uses category events with `actorId` already.
+
+## Source mirror
+
+The bridge release tag contains core alpha.68. The core alpha.69 tag contains bridge alpha.8.
+The bridge directory has no diff between these two tags.
+
+The mirror script selects `xstate@6.0.0-alpha.69` and checks both package versions.
+It also requires the exact bridge release tag to exist.
+This keeps source-first work aligned with both installed pins.
+
+## Follow-up
+
+The gardener owns the peers refresh after this bump. It remains due and is outside this packet.
+Apps that copy rat-stack must update both pins, rename bridge constructors, and audit persisted snapshots before restoring them.
+Old actor-reference and timer formats are not accepted by alpha.68 and later.

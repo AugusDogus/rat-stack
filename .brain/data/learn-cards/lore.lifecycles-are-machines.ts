@@ -1,13 +1,13 @@
-import { createEffectActor, fromEffect, setupEffect } from "@xstate/effect";
+import {
+  createEffectActor,
+  createEffectLogic,
+  setupEffect,
+} from "@xstate/effect";
 import { Effect } from "effect";
 
-const sendMail = fromEffect({
-  effect: () => Effect.log("confirmation sent"),
-});
+const sendMail = createEffectLogic(Effect.log("confirmation sent"));
 
-export const signupMachine = setupEffect({
-  actors: { sendMail },
-}).createMachine({
+export const signup = setupEffect({ actors: { sendMail } }).createMachine({
   initial: "sending",
   states: {
     failed: { type: "final" },
@@ -22,4 +22,4 @@ export const signupMachine = setupEffect({
   },
 });
 
-export const startSignup = createEffectActor(signupMachine);
+export const startSignup = createEffectActor(signup);

@@ -34,7 +34,7 @@ for p in effect @effect/platform-node @effect/vitest @effect/tsgo alchemy xstate
 done
 ```
 
-Read the returned versions, not only the tag names. Effect 4 and its adapters now use `latest`; `rc` points to the older release candidate. Alchemy 2 and `@effect/tsgo` use `latest`. XState 6 uses `alpha`; its `latest` still points to XState 5. For `@xstate/effect`, compare both `alpha` and `latest` among the 0.1 alpha versions: `latest` can be newer. Check the bridge's peer ranges before choosing the matching XState pin.
+Read the returned versions, not only the tag names. Effect 4 and its adapters now use `latest`; `rc` points to the older release candidate. Alchemy 2 and `@effect/tsgo` use `latest`. XState 6 uses `alpha`; its `latest` still points to XState 5. For `@xstate/effect`, compare both `alpha` and `latest` across alpha versions: `latest` can be newer. Check the bridge's peer ranges before choosing the matching XState pin.
 
 ## 2. Update one dependency family at a time
 

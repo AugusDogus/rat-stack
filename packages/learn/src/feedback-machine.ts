@@ -3,7 +3,7 @@ import { FeedbackGrant, LearnUnauthenticated } from "@rat-stack/core/learn";
 import type { FeedbackPoll } from "@rat-stack/core/learn";
 import {
   createEffectActor,
-  fromEffect,
+  createEffectLogic,
   join,
   setupEffect,
 } from "@xstate/effect";
@@ -19,13 +19,13 @@ interface DeviceContext {
   readonly error: LearnUnauthenticated | undefined;
 }
 
-const inspectDevice = fromEffect({
+const inspectDevice = createEffectLogic({
   effect: ({ input }) =>
     FeedbackAuthor.use((author) => author.inspectDevice(input.deviceCode)),
   schemas: { input: Schema.Struct({ deviceCode: Schema.String }) },
 });
 
-const issueCredential = fromEffect({
+const issueCredential = createEffectLogic({
   effect: ({ input }) =>
     FeedbackAuthor.use((author) => author.issue(input)).pipe(
       Effect.map((token) => ({ expiresAt: input.expiresAt, token }))
@@ -98,7 +98,7 @@ export const feedbackDeviceMachine = setupEffect({
   },
 });
 
-const inspectCredential = fromEffect({
+const inspectCredential = createEffectLogic({
   effect: ({ input }) =>
     FeedbackAuthor.use((author) =>
       author.inspectCredential(input.token, input.capability)

@@ -1,7 +1,7 @@
 import { watchActor } from "@rat-stack/capability/actor-watch";
 import {
   createEffectActor,
-  fromEffect,
+  createEffectLogic,
   join,
   send,
   setupEffect,
@@ -100,7 +100,7 @@ const MachineInput = Schema.Struct({
   record: Schema.UndefinedOr(InterestRecordSchema),
 });
 
-const persistRecord = fromEffect({
+const persistRecord = createEffectLogic({
   effect: ({ input }) =>
     InterestStore.use((store) =>
       input.record === undefined ? Effect.void : store.save(input.record)

@@ -1,5 +1,9 @@
 import { watchActor } from "@rat-stack/capability/actor-watch";
-import { createEffectActor, fromEffect, setupEffect } from "@xstate/effect";
+import {
+  createEffectActor,
+  createEffectLogic,
+  setupEffect,
+} from "@xstate/effect";
 import { Context, Effect, Layer, Ref, Schema } from "effect";
 
 export const FlagStage = Schema.Literals(["rollingOut", "on", "removed"]);
@@ -34,7 +38,7 @@ export class FlagLifecycleJournal extends Context.Service<
   );
 }
 
-const recordTransition = fromEffect({
+const recordTransition = createEffectLogic({
   effect: ({ input }) =>
     FlagLifecycleJournal.use((journal) => journal.record(input)),
   schemas: { input: FlagTransition },

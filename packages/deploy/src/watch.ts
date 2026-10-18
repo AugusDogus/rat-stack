@@ -2,7 +2,7 @@ import { watchActor } from "@rat-stack/capability/actor-watch";
 import type { Verdict } from "@rat-stack/check-harness";
 import {
   createEffectActor,
-  fromEffect,
+  createEffectLogic,
   join,
   setupEffect,
 } from "@xstate/effect";
@@ -274,17 +274,17 @@ export const observeWatchCycle = Effect.fn("observeWatchCycle")(
   Effect.scoped
 );
 
-const discover = fromEffect({
+const discover = createEffectLogic({
   effect: ({ input }) => discoverWatchRoutes(input),
   schemas: { input: WatchInputSchema },
 });
 
-const observe = fromEffect({
+const observe = createEffectLogic({
   effect: ({ input }) => observeWatchCycle(input),
   schemas: { input: WatchCycleInputSchema },
 });
 
-const wait = fromEffect({
+const wait = createEffectLogic({
   effect: ({ input }) =>
     Effect.gen(function* waitForCycle() {
       const remaining = Math.max(

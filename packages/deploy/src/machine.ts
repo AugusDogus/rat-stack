@@ -3,7 +3,7 @@ import { gateOutcome } from "@rat-stack/check-harness";
 import type { Verdict } from "@rat-stack/check-harness";
 import {
   createEffectActor,
-  fromEffect,
+  createEffectLogic,
   join,
   setupEffect,
 } from "@xstate/effect";
@@ -70,7 +70,7 @@ type SourceResult =
     }
   | { readonly kind: "crashed" };
 
-const source = fromEffect({
+const source = createEffectLogic({
   effect: ({ input }) => {
     const expected = input.expectSha;
 
@@ -102,7 +102,7 @@ const source = fromEffect({
   },
 });
 
-const quietWindow = fromEffect({
+const quietWindow = createEffectLogic({
   effect: ({ input }) =>
     stepResult(
       readQuietWindow(input.deadline).pipe(
@@ -121,7 +121,7 @@ const quietWindow = fromEffect({
   },
 });
 
-const awaitQuietWindow = fromEffect({
+const awaitQuietWindow = createEffectLogic({
   effect: ({ input }) =>
     Effect.gen(function* awaitQuietWindowEnd() {
       const now = yield* Clock.currentTimeMillis;
@@ -131,19 +131,19 @@ const awaitQuietWindow = fromEffect({
   schemas: { input: Schema.Struct({ until: Schema.Natural }) },
 });
 
-const preflight = fromEffect({
+const preflight = createEffectLogic({
   effect: ({ input }) =>
     stepResult(DeployRunner.use((runner) => runner.preflight(input))),
   schemas: { input: DeployInputSchema },
 });
 
-const plan = fromEffect({
+const plan = createEffectLogic({
   effect: ({ input }) =>
     stepResult(DeployRunner.use((runner) => runner.plan(input))),
   schemas: { input: DeployInputSchema },
 });
 
-const classify = fromEffect({
+const classify = createEffectLogic({
   effect: ({ input }) =>
     Effect.sync(() =>
       classifyRows(input.plan, input.allow, input.ownerApproved)
@@ -157,13 +157,13 @@ const classify = fromEffect({
   },
 });
 
-const apply = fromEffect({
+const apply = createEffectLogic({
   effect: ({ input }) =>
     stepResult(DeployRunner.use((runner) => runner.apply(input))),
   schemas: { input: DeployInputSchema },
 });
 
-const checks = fromEffect({
+const checks = createEffectLogic({
   effect: ({ input }) =>
     stepResult(DeployRunner.use((runner) => runner.checks(input))),
   schemas: { input: ApplyReceiptSchema },
