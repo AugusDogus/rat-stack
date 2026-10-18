@@ -13,6 +13,7 @@ import {
   traceObservability,
   traceSettings,
 } from "../../site/src/observability.js";
+import { WebsiteContentManifestError } from "./website-content-manifest-error.js";
 
 const contentManifestPath = fileURLToPath(
   new URL("../../site/dist/content/manifest.json", import.meta.url)
@@ -21,18 +22,20 @@ const contentManifestPath = fileURLToPath(
 const contentGeneration = Effect.gen(function* contentGeneration() {
   const fs = yield* FileSystem.FileSystem;
 
-  const manifest = yield* fs
-    .readFileString(contentManifestPath)
-    .pipe(
-      Effect.flatMap(
-        Schema.decodeEffect(
-          Schema.fromJsonString(
-            Schema.Struct({ generation: Schema.NonEmptyString })
-          )
+  const manifest = yield* fs.readFileString(contentManifestPath).pipe(
+    Effect.flatMap(
+      Schema.decodeEffect(
+        Schema.fromJsonString(
+          Schema.Struct({ generation: Schema.NonEmptyString })
         )
-      ),
-      Effect.orDie
-    );
+      )
+    ),
+    Effect.mapError(
+      (cause) =>
+        new WebsiteContentManifestError({ cause, path: contentManifestPath })
+    ),
+    Effect.orDie
+  );
 
   return manifest.generation;
 });
