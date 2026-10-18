@@ -14,6 +14,7 @@ import { readerSystemsSkillsFlags } from "../../site/scripts/reader-systems-skil
 import { writeFileAtomically } from "../../site/scripts/write-file-atomically.ts";
 import { ReaderFlags } from "../src/client/reader/model.ts";
 import type { ReaderPageFlags } from "../src/client/reader/model.ts";
+import { contentGenerationHeader } from "../src/content-generation-header.ts";
 import {
   isReaderRoutePath,
   readerNoStoreRoutePaths,
@@ -204,6 +205,12 @@ export const finalizeReader = Effect.fn("reader.finalize")(
     );
 
     const headerPath = `${clientDirectory}/_headers`;
+    const generation = pages[0]?.page.generation;
+
+    const generationHeader =
+      generation === undefined
+        ? ""
+        : `  ${contentGenerationHeader}: ${generation}\n`;
 
     if (Option.isSome(commit)) {
       if (
@@ -222,15 +229,16 @@ export const finalizeReader = Effect.fn("reader.finalize")(
 
       return yield* fs.writeFileString(
         headerPath,
-        `/*\n  X-Robots-Tag: noindex\n  X-Preview-Commit: ${commit.value}\n${readerRouteHeaders(pages, false)}`
+        `/*\n  X-Robots-Tag: noindex\n  X-Preview-Commit: ${commit.value}\n${generationHeader}${readerRouteHeaders(pages, false)}`
       );
     }
 
     const routeHeaders = readerRouteHeaders(pages, true);
 
-    return yield* routeHeaders === ""
-      ? fs.remove(headerPath, { force: true })
-      : fs.writeFileString(headerPath, routeHeaders);
+    return yield* fs.writeFileString(
+      headerPath,
+      `/*\n${generationHeader}${routeHeaders}`
+    );
   },
   Effect.provide(NodeServices.layer)
 );

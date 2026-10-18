@@ -163,7 +163,10 @@ it.layer(NodeServices.layer)((test) => {
               ? yield* fs.readFileString(headerPath)
               : "";
 
-            expect(headers).not.toMatch(/^\/\*$/mu);
+            const lines = headers.split("\n");
+            expect(lines[0]).toBe("/*");
+            expect(lines[1]).toMatch(/^ {2}X-Content-Generation: \S+$/u);
+            expect(lines[2]?.startsWith("  ")).not.toBe(true);
             expect(headers).not.toContain("X-Preview-Commit");
           } else {
             expect(proof.robots).toBe("noindex");
