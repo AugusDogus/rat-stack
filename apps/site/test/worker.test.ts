@@ -1,5 +1,7 @@
+import { NodeServices } from "@effect/platform-node";
 import { expect, it } from "@effect/vitest";
 import { ExecuteResult } from "@rat-stack/capability/code-mode";
+import { parseCodeRequest } from "@rat-stack/code-snippets";
 import {
   CafeNewsList,
   LorePathOutput,
@@ -7,10 +9,11 @@ import {
   ReadOutput,
   SearchOutput,
 } from "@rat-stack/core/contracts";
-import { Effect, Layer, Schema } from "effect";
+import { Effect, FileSystem, Layer, Schema } from "effect";
 import * as McpSchema from "effect/ai/McpSchema";
 import * as HttpRouter from "effect/http/HttpRouter";
 
+import { parseContentMarkdown } from "../scripts/svx-ast.js";
 import { mischiefRoutes } from "../src/app.js";
 import type { StaticResponseCache } from "../src/app.js";
 import { rateLimitsFrom } from "../src/rate-limits.js";
@@ -374,6 +377,54 @@ const makeTestPrivateJwk = Effect.promise(
 );
 
 it.effect(
+  "renders pinned excerpt links with their source ranges and short sha",
+  () =>
+    Effect.gen(function* testPinnedExcerptLinks() {
+      const fs = yield* FileSystem.FileSystem;
+      const sourcePath = "skills/learn-rat-stack/SKILL.md";
+
+      const source = yield* fs.readFileString(
+        new URL(`../../../${sourcePath}`, import.meta.url).pathname
+      );
+
+      const requests = yield* Effect.forEach(
+        parseContentMarkdown(source, sourcePath).children.filter(
+          (node) => node.type === "code"
+        ),
+        (node) =>
+          parseCodeRequest(
+            { ...node, line: node.position?.start.line ?? 1 },
+            sourcePath
+          )
+      );
+
+      const html = generatedReaderPage("/skills/learn-rat-stack");
+
+      for (const path of [
+        "packages/core/src/inspect-file.ts",
+        "apps/cli/src/surfaces.ts",
+      ]) {
+        const excerpts = requests.filter(
+          (request) => request.reference && request.path === path
+        );
+
+        expect(excerpts).toHaveLength(1);
+
+        for (const excerpt of excerpts) {
+          expect(excerpt.repo).toBe("rat-stack");
+          expect(excerpt.commit).toMatch(/^[0-9a-f]{40}$/u);
+          expect(excerpt.ranges.length).toBeGreaterThan(0);
+          const start = Math.min(...excerpt.ranges.map((range) => range.start));
+          const end = Math.max(...excerpt.ranges.map((range) => range.end));
+          expect(html).toContain(
+            `<a href="https://github.com/joelhooks/${excerpt.repo}/blob/${excerpt.commit}/${path}#L${start}-L${end}">${path} · ${excerpt.commit.slice(0, 8)}</a>`
+          );
+        }
+      }
+    }).pipe(Effect.provide(NodeServices.layer))
+);
+
+it.effect(
   "serves the catalogue as Markdown and keeps the generated reader documents complete",
   () =>
     withHandler((handler) =>
@@ -499,12 +550,6 @@ it.effect(
         expect(skillHtml).toContain('<h1 id="learn-the-stack">');
         expect(skillHtml).toContain("Trace one action");
         expect(skillHtml).not.toContain("description:");
-        expect(skillHtml).toContain(
-          '<a href="https://github.com/joelhooks/rat-stack/blob/b4d6b8f499e57bc76914ad70df3a0c99751ae28c/packages/core/src/inspect-file.ts#L10-L22">packages/core/src/inspect-file.ts · b4d6b8f4</a>'
-        );
-        expect(skillHtml).toContain(
-          '<a href="https://github.com/joelhooks/rat-stack/blob/b4d6b8f499e57bc76914ad70df3a0c99751ae28c/apps/cli/src/surfaces.ts#L25-L51">apps/cli/src/surfaces.ts · b4d6b8f4</a>'
-        );
         expect(skillHtml).toContain(
           '<a href="/AGENTS.md"><code>AGENTS.md</code></a>'
         );
