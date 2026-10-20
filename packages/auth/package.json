@@ -59,6 +59,7 @@
     "@rat-stack/devtools": "workspace:*",
     "@types/node": "24.19.2",
     "@types/pg": "8.23.1",
+    "drizzle-kit": "1.0.0-rc.5-ab785fc",
     "typescript": "7.0.2",
     "vitest": "5.0.5"
   }
