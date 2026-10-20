@@ -93,7 +93,7 @@ if [[ "$SOURCE_XSTATE_VERSION" != "$XSTATE_VERSION" || "$SOURCE_XSTATE_EFFECT_VE
 fi
 clone_source alchemy-run alchemy https://github.com/alchemy-run/alchemy.git "v${ALCHEMY_VERSION}" \
   "Alchemy IaC matching apps/infra alchemy@${ALCHEMY_VERSION}. Read alchemy/src/cloudflare/."
-clone_source better-auth better-auth https://github.com/better-auth/better-auth.git "better-auth@${BETTER_AUTH_VERSION}" \
+clone_source better-auth better-auth https://github.com/better-auth/better-auth.git "v${BETTER_AUTH_VERSION}" \
   "Better Auth matching packages/auth better-auth@${BETTER_AUTH_VERSION}; Alchemy's wrapper lives in alchemy-run/alchemy packages/better-auth."
 clone_source foldkit foldkit https://github.com/foldkit/foldkit.git "foldkit@${FOLDKIT_VERSION}" \
   "Foldkit UI matching apps/web foldkit@${FOLDKIT_VERSION}."

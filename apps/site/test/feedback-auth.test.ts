@@ -47,9 +47,14 @@ const post = Effect.fn("postFeedback")(function* post(
   );
 });
 
-const get = (handler: WebHandler, path: string) =>
+const get = (handler: WebHandler, path: string, cookie?: string) =>
   Effect.promise(
-    handler.bind(undefined, new Request(`http://auth.test${path}`))
+    handler.bind(
+      undefined,
+      new Request(`http://auth.test${path}`, {
+        headers: cookie === undefined ? {} : { cookie },
+      })
+    )
   );
 
 const bodyText = (response: Response) =>
@@ -298,6 +303,21 @@ it.effect(
             .map((part) => part.split(";")[0])
             .join("; ");
 
+          expect(
+            (yield* post(
+              handler,
+              "/auth/device/approve",
+              { userCode: request.userCode },
+              cookie
+            )).status
+          ).toBe(400);
+          expect(
+            (yield* get(
+              handler,
+              `/auth/device?user_code=${encodeURIComponent(request.userCode)}`,
+              cookie
+            )).status
+          ).toBe(200);
           expect(
             (yield* post(
               handler,

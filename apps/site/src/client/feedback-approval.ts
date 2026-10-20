@@ -33,9 +33,12 @@ actions.addEventListener("submit", async (event) => {
   const operation = event.submitter?.value === "approve" ? "approve" : "deny";
   for (const button of actions.querySelectorAll("button")) button.disabled = true;
   try {
-    const response = await fetch("/auth/device/" + operation, {
-      method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ userCode: code.value.trim() }),
+    const verification = await fetch("/auth/device?user_code=" + encodeURIComponent(code.value.trim()), {
+      credentials: "same-origin", cache: "no-store",
     });
+    const response = verification.ok ? await fetch("/auth/device/" + operation, {
+      method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ userCode: code.value.trim() }),
+    }) : verification;
     status.textContent = response.ok ? (operation === "approve" ? "Approved. Your agent can now leave learn feedback only." : "Denied. No feedback credential is granted.") : "This code could not be processed. Ask your agent for a new code.";
     if (!response.ok) for (const button of actions.querySelectorAll("button")) button.disabled = false;
   } catch {
