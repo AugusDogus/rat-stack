@@ -116,6 +116,10 @@ No budget is raised, and no schema validation is disabled.
 2. Refresh sources with `pnpm vendor:agent-sources`. Better Auth now uses its available `v1.7.11` tag.
 3. Run a non-optimistic frozen install and the full gate.
 4. Keep the existing D1 and Postgres auth tables. This configuration needs no migration or backfill.
+   - The identical schema holds only for this plugin set: email and password plus device authorization.
+   - With the `jwt` and `oauth-provider` plugins, 1.7.11 adds three tables: `oauthResource`, `oauthClientResource` and `oauthClientAssertion`.
+   - It also adds 24 columns and 4 indexes, and removes `validAudiences`.
+   - Generate the schema for your own plugins, diff it against production, and apply that migration before you deploy.
 5. Review the upgrade guide separately if your app adds any plugin listed as unused above.
 6. Check the actual target database before a separately approved deployment. This packet deploys nothing.
 

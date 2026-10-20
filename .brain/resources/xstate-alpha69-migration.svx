@@ -5,7 +5,8 @@ summary: Exact pins, upstream compatibility checks, and the source mirror choice
 
 # XState alpha.69 migration
 
-The runtime pins are `xstate@6.0.0-alpha.69` and `@xstate/effect@1.0.0-alpha.8`.
+This page started at `xstate@6.0.0-alpha.69` and `@xstate/effect@1.0.0-alpha.8`.
+The current pins are `xstate@6.0.0-alpha.70` and `@xstate/effect@1.0.0-alpha.9`; see the alpha.70 section.
 Effect stays at `4.0.0`. The bridge peers accept Effect `^4.0.0` and XState `^6.0.0-alpha.68`.
 
 ## Upstream changes
@@ -31,12 +32,36 @@ Effect stays at `4.0.0`. The bridge peers accept Effect `^4.0.0` and XState `^6.
 The bridge release tag contains core alpha.68. The core alpha.69 tag contains bridge alpha.8.
 The bridge directory has no diff between these two tags.
 
-The mirror script selects `xstate@6.0.0-alpha.69` and checks both package versions.
+For alpha.69, the mirror script selected `xstate@6.0.0-alpha.69` and checked both package versions.
 It also requires the exact bridge release tag to exist.
 This keeps source-first work aligned with both installed pins.
 
 ## Follow-up
 
-The gardener owns the peers refresh after this bump. It remains due and is outside this packet.
+The alpha.69 packet deferred the peers refresh. The alpha.70 gardener pass completes that refresh.
 Apps that copy rat-stack must update both pins, rename bridge constructors, and audit persisted snapshots before restoring them.
 Old actor-reference and timer formats are not accepted by alpha.68 and later.
+
+## Alpha.70 and bridge alpha.9
+
+The 2026-10-20 update pins `xstate@6.0.0-alpha.70` and `@xstate/effect@1.0.0-alpha.9` together.
+Effect stays at `4.0.0`. The bridge peers require Effect `^4.0.0` and XState `^6.0.0-alpha.70`.
+
+- [Core changelog](https://github.com/statelyai/xstate/blob/xstate%406.0.0-alpha.70/packages/core/CHANGELOG.md#600-alpha70) removes `ActorRefFromLogic` and narrows `ActorRefFrom` to logic types.
+- State ids change. Hash targets resolve whole ids. Implicit invoke ids use `<stateId>:<index>`.
+- State keys require escaped dots. Bare string transitions throw. Versioned machines require an explicit id.
+- Invoked actors with required input now require an input mapper. Graph traversal requires samples for events with payloads.
+- Inline invokes no longer persist synthetic source names. Consumers with stored snapshots must migrate old ids and synthetic sources.
+- [Bridge changelog](https://github.com/statelyai/xstate/blob/%40xstate/effect%401.0.0-alpha.9/packages/xstate-effect/CHANGELOG.md#100-alpha9) changes root parallel tags to the machine id, or an empty string without an id.
+
+Our machines need no call-site changes. They already use declared logic, object transitions, and required invoke inputs.
+The inspection graph test supplies both completion payloads. Runtime code uses no removed type helpers, tagged states, or persisted XState snapshots.
+The three `createEffect*Logic` constructors keep their names. The inline-Effect lint rule and its real Oxlint fixtures remain unchanged.
+
+The core alpha.70 and bridge alpha.9 tags contain identical core and bridge trees.
+The source mirror selects the core tag and verifies both package versions.
+Registry checks confirm SHA-512 tarball integrity and GitHub Actions provenance for both packages.
+Neither tarball declares lifecycle scripts or runtime dependencies. The age exceptions remain exact versions.
+
+Consumers must move both pins, refresh mirrors, and run their lifecycle tests.
+Audit persisted snapshots, whole-id targets, graph payload samples, and root parallel tag matching before upgrading.

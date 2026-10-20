@@ -59,6 +59,37 @@ No new pattern is adopted.
 The local-studio and pi-cf additions have verified manifests or lockfiles, without a runtime study.
 The search is bounded; it does not establish that these are all public bridge consumers.
 
+## Alpha.70 gardener
+
+Checked 2026-10-20 after XState `6.0.0-alpha.70` and bridge `1.0.0-alpha.9`.
+All 55 existing peers remain. Two verified public applications join at B. No existing tier changes.
+The [roster](./peers) records default-branch commits and exact versions.
+
+SolStatus moves to Effect `4.0.5` and Alchemy `2.0.0-beta.83`. Its C tier reflects the earlier pattern study, not version alignment.
+The current pkishorez catalog removes XState and its bridge. Its Effect and Alchemy integration keeps it at B.
+
+### DayBee: retain the asset Worker reference
+
+Source: [web Stack](https://github.com/nexmoe/DayBee/blob/32617052c958cc4d6c18ad27c83ed6987deb79b7/apps/web/alchemy.run.ts) and [manifest](https://github.com/nexmoe/DayBee/blob/32617052c958cc4d6c18ad27c83ed6987deb79b7/apps/web/package.json).
+The manifest pins Effect `4.0.5` and Alchemy `2.0.0-beta.83`.
+The Stack yields a Cloudflare Worker with a static asset directory. Production alone gets the custom domain.
+Keep this deployment reference at B. It adds no lifecycle pattern to adopt.
+
+### Betterwispr: retain the two-Worker reference
+
+Source: [frontend Stack](https://github.com/opennookorg/betterwispr/blob/4021a0f402bd72eed939e2198d52a93512e56f40/betterwispr-frontend/packages/infra/alchemy.run.ts) and [manifest](https://github.com/opennookorg/betterwispr/blob/4021a0f402bd72eed939e2198d52a93512e56f40/betterwispr-frontend/packages/infra/package.json).
+The manifest pins Effect `4.0.0` and Alchemy `2.0.0-beta.80`.
+The Stack yields a server Worker and a Vite website. The website receives the server URL through an Alchemy Output.
+Keep this deployment reference at B. Our private [RPC](/skills/learn-rat-stack) [binding](/lore/bindings) remains the supported browser path; no implementation changes follow.
+
+Sourcegraph discovery returns 255 repositories across all searched dependency families.
+The focused XState queries return no indexed matches, including known consumers. They do not establish that public consumers are absent.
+GitHub code search requires authentication. The DeepWiki pointer step is unavailable during this pass.
+The studies above use source files directly. Search coverage remains bounded.
+
+The excerpt audit compares all 66 local references with their selected lines at HEAD.
+None differ, so no excerpt needs a new [pin](/skills/gardener). The reviewed changes expose no new prohibited code pattern.
+
 ## Patterns
 
 ### Browser RPC behind a private Worker binding — adopt
@@ -77,7 +108,7 @@ All browser operations go through `toRpc` and the same `/rpc` transport. Keep ha
 
 T3Code makes `Drizzle.Schema` the migration source, then provisions a PlanetScale database or stage branch, a runtime role, and a Hyperdrive connection from that role's origin. Production retains the shared database; non-production stages use branches. This is the closest inspected resource graph to rat-stack's planned PlanetScale Postgres Layer.
 
-Adapt this for the database cartridge. The vendor Layer should own its schema, migration path, role, and Hyperdrive binding.
+Adapt this for the database cartridge. The vendor Layer should own its schema, migration path, role, and [Hyperdrive binding](/lore/bindings).
 Use Alchemy Outputs and typed bindings for connection strings. Keep provider-specific Drizzle details behind the database service tag.
 Choose D1 or PlanetScale once with `Layer.provide`. Keep T3Code's stage-mode branch out of domain code.
 
@@ -87,7 +118,7 @@ Choose D1 or PlanetScale once with `Layer.provide`. Keep T3Code's stage-mode bra
 
 Maple builds Drizzle over `@effect/sql-pg`, opens the client inside an Effect `Scope`, and uses PGlite plus the same bundled migrations for local and test paths. Its exported `MapleDb` remains Postgres-specific. Use the driver implementation and test technique behind a provider-neutral database contract.
 
-Adapt this for the database cartridge. Keep the public repository-shaped database service small and let each vendor Layer implement it.
+Adapt this for the [database cartridge](/lore/cartridges). Keep the public repository-shaped database service small and let each vendor Layer implement it.
 Scope clients to one invocation. Use a real embedded database for migrations and query tests. Keep Drizzle's driver type behind the cross-provider API.
 Share migration fixtures and the service contract. D1 and Postgres keep their own schemas and implementations, as Joel decided.
 
