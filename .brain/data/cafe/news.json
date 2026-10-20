@@ -67,13 +67,7 @@
     "topReplies": [
       {
         "likes": 1,
-        "text": "@JuliaScript @alchemy_run @EffectTS_ I've been using convex to give all my long running agents a way to save progress or key task metrics as they go,",
-        "url": "https://x.com/ozyman42/status/2112545862891311460",
-        "x": "ozyman42"
-      },
-      {
-        "likes": 1,
-        "text": "@JuliaScript @alchemy_run @EffectTS_ Thanks for effect-harness!! I really want to bring effect stuff into convex more. I'm going to see if i can combi",
+        "text": "@JuliaScript @alchemy_run @EffectTS_ Thanks for effect-harness!!\nI really want to bring effect stuff into convex more. I'm going to see if i can combine your work and confect.\nconvex as the runtime and storage and having it init compute on the fly to run the agents would have some nice properties.",
         "url": "https://x.com/ozyman42/status/2112387497871515928",
         "x": "ozyman42"
       }
