@@ -5,7 +5,8 @@ summary: Exact pins, upstream compatibility checks, and the source mirror choice
 
 # XState alpha.69 migration
 
-The runtime pins are `xstate@6.0.0-alpha.69` and `@xstate/effect@1.0.0-alpha.8`.
+This page started at `xstate@6.0.0-alpha.69` and `@xstate/effect@1.0.0-alpha.8`.
+The current pins are `xstate@6.0.0-alpha.70` and `@xstate/effect@1.0.0-alpha.9`; see the alpha.70 section.
 Effect stays at `4.0.0`. The bridge peers accept Effect `^4.0.0` and XState `^6.0.0-alpha.68`.
 
 ## Upstream changes
@@ -31,7 +32,7 @@ Effect stays at `4.0.0`. The bridge peers accept Effect `^4.0.0` and XState `^6.
 The bridge release tag contains core alpha.68. The core alpha.69 tag contains bridge alpha.8.
 The bridge directory has no diff between these two tags.
 
-The mirror script selects `xstate@6.0.0-alpha.69` and checks both package versions.
+For alpha.69, the mirror script selected `xstate@6.0.0-alpha.69` and checked both package versions.
 It also requires the exact bridge release tag to exist.
 This keeps source-first work aligned with both installed pins.
 
