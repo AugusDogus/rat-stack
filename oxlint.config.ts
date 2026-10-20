@@ -69,6 +69,16 @@ export default defineConfig({
     ...foldkitOverrides,
     {
       files: [
+        "**/*.{test,spec,test-d,spec-d}.{mts,cts,mjs,cjs}",
+        "**/__tests__/**/*.{mts,cts,mjs,cjs}",
+      ],
+      rules: {
+        "no-empty-function": "error",
+        "promise/prefer-await-to-then": "error",
+      },
+    },
+    {
+      files: [
         "apps/*/src/features/**",
         "apps/*/src/client/**",
         "apps/*/src/dev/features/**",

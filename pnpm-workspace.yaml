@@ -1,5 +1,8 @@
 verifyDepsBeforeRun: error
 
+overrides:
+  kysely: 0.29.4
+
 packages:
   - "apps/*"
   - "packages/*"
@@ -20,28 +23,16 @@ minimumReleaseAgeExclude:
   - alchemy@2.0.0-beta.83
   - effect@4.0.0
   - "@foldkit/oxlint-plugin@0.15.3"
-  - "@foldkit/devtools@0.167.0"
-  - "@foldkit/ui@0.167.0"
-  - "@foldkit/markdown@0.14.2"
-  - "@foldkit/vite-plugin@0.27.0"
-  - foldkit@0.167.0
   - "@effect/platform-node@4.0.0"
   - "@effect/platform-node-shared@4.0.0"
   - "@effect/sql-pg@4.0.0"
   - "@effect/sql-d1@4.0.0"
   - "@effect/sql-sqlite-do@4.0.0"
   - "@effect/vitest@4.0.0"
-  - xstate@6.0.0-alpha.69
-  - "@xstate/effect@1.0.0-alpha.8"
-  - "@earendil-works/chord@0.86.1"
-  - "@earendil-works/pi-agent-core@0.86.1"
-  - "@earendil-works/pi-ai@0.86.1"
-  - "@earendil-works/pi-coding-agent@0.86.1"
-  - "@earendil-works/pi-telemetry@0.86.1"
-  - "@earendil-works/pi-tui@0.86.1"
-  - better-auth@1.6.2
+  - xstate@6.0.0-alpha.70
+  - "@xstate/effect@1.0.0-alpha.9"
+  - better-auth@1.7.11
   - satori@0.33.5
-  - shiki@3.23.0
   - "@alchemy.run/cloudflare-runtime@2.0.0-beta.83"
   - "@alchemy.run/floci@2.0.0-beta.83"
   - "@alchemy.run/node-utils@2.0.0-beta.83"
@@ -68,3 +59,11 @@ minimumReleaseAgeExclude:
   - "@varlock/native-helper-linux-x64@1.23.0"
   - "@varlock/native-helper-win32-x64@1.23.0"
   - varlock@1.23.0
+  - "@effect/tsgo-darwin-arm64@0.54.0"
+  - "@effect/tsgo-darwin-x64@0.54.0"
+  - "@effect/tsgo-linux-arm64@0.54.0"
+  - "@effect/tsgo-linux-arm@0.54.0"
+  - "@effect/tsgo-linux-x64@0.54.0"
+  - "@effect/tsgo-win32-arm64@0.54.0"
+  - "@effect/tsgo-win32-x64@0.54.0"
+  - "@effect/tsgo@0.54.0"

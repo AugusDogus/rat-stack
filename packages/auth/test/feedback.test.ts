@@ -69,6 +69,22 @@ const makeFixture = Effect.gen(function* makeFixture() {
   const identity = yield* FeedbackIdentity;
   const requested = yield* identity.request;
 
+  expect(
+    (yield* providerRequest(
+      "/device/approve",
+      { userCode: requested.userCode },
+      cookie
+    )).status
+  ).toBe(400);
+
+  expect(
+    (yield* providerRequest(
+      `/device?user_code=${encodeURIComponent(requested.userCode)}`,
+      undefined,
+      cookie
+    )).status
+  ).toBe(200);
+
   const approved = yield* providerRequest(
     "/device/approve",
     { userCode: requested.userCode },
@@ -261,6 +277,13 @@ it.layer(services)((test) => {
           personId: fixture.personId,
         });
         const requested = yield* identity.request;
+        expect(
+          (yield* providerRequest(
+            `/device?user_code=${encodeURIComponent(requested.userCode)}`,
+            undefined,
+            fixture.cookie
+          )).status
+        ).toBe(200);
         expect(
           (yield* providerRequest(
             "/device/deny",

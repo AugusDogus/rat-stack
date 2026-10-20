@@ -5,6 +5,7 @@ export const feedbackAuthBuild = {
       "@better-auth/*",
       "@rat-stack/auth",
       "@rat-stack/database",
+      "vite",
     ],
   },
 };

@@ -48,18 +48,20 @@
     "@rat-stack/capability": "workspace:*",
     "@rat-stack/database": "workspace:*",
     "alchemy": "2.0.0-beta.83",
-    "better-auth": "1.6.2",
+    "better-auth": "1.7.11",
     "drizzle-orm": "1.0.0-rc.5-ab785fc",
     "effect": "4.0.0",
-    "pg": "8.23.0"
+    "kysely": "0.29.4",
+    "pg": "8.23.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "5.20260901.1",
+    "@cloudflare/workers-types": "5.20261019.1",
     "@effect/vitest": "4.0.0",
     "@rat-stack/devtools": "workspace:*",
-    "@types/node": "24.13.6",
-    "@types/pg": "8.20.0",
+    "@types/node": "24.19.2",
+    "@types/pg": "8.23.1",
+    "drizzle-kit": "1.0.0-rc.5-ab785fc",
     "typescript": "7.0.2",
-    "vitest": "5.0.3"
+    "vitest": "5.0.5"
   }
 }
