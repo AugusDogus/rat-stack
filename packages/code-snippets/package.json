@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "effect": "4.0.0",
-    "shiki": "3.23.0"
+    "shiki": "4.5.0"
   },
   "devDependencies": {
     "@effect/platform-node": "4.0.0",
