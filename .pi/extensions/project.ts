@@ -6,7 +6,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 export default function projectExtension(pi: ExtensionAPI) {
   pi.registerCommand("project-status", {
     description: "Show this project's task commands and law files.",
-    handler: (_args, ctx) => {
+    handler: async (_args, ctx) => {
       const lines = [
         "law: AGENTS.md (via CLAUDE.md @AGENTS.md) · intent: VISION.md",
         "check: pnpm check && pnpm test · fix: pnpm fix",

@@ -41,7 +41,7 @@
     "find-peers": "node scripts/find-peers.ts"
   },
   "devDependencies": {
-    "@earendil-works/pi-coding-agent": "0.86.1",
+    "@earendil-works/pi-coding-agent": "1.3.0",
     "@effect/tsgo": "0.54.0",
     "@foldkit/oxlint-plugin": "0.15.3",
     "@oxlint/plugins": "1.88.0",
