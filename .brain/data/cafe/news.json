@@ -1,10 +1,10 @@
 [
   {
     "kind": "release",
-    "url": "https://github.com/statelyai/xstate/releases/tag/%40xstate%2Feffect%401.0.0-alpha.8",
-    "title": "@xstate/effect 1.0.0-alpha.8 and xstate 6.0.0-alpha.69",
-    "summary": "@xstate/effect 1.0.0-alpha.8 renames fromEffect to createEffectLogic, matching core create*Logic names; xstate 6.0.0-alpha.69 keeps literal outputs in createAsyncLogic.",
-    "date": "2026-10-17",
+    "url": "https://github.com/statelyai/xstate/releases/tag/xstate%406.0.0-alpha.70",
+    "title": "xstate 6.0.0-alpha.70 and @xstate/effect 1.0.0-alpha.9",
+    "summary": "xstate 6.0.0-alpha.70 removes ActorRefFromLogic and resolves # targets by exact state id; @xstate/effect 1.0.0-alpha.9 tags root parallel states with the machine id.",
+    "date": "2026-10-19",
     "repo": "statelyai/xstate",
     "author": {
       "github": "statelyai",
@@ -12,8 +12,72 @@
     },
     "source": "https://github.com/statelyai/xstate/releases",
     "engagement": {
-      "stars": 30293
+      "stars": 30331
     }
+  },
+  {
+    "kind": "release",
+    "url": "https://github.com/foldkit/foldkit/pull/1655",
+    "title": "Foldkit Blocks and Effect Layers preview",
+    "summary": "Canary packages preview Block composition and handler Layers: apps compose Blocks and pass the root ApplicationBlock to Program.make. APIs may change before stable.",
+    "date": "2026-10-20",
+    "repo": "foldkit/foldkit",
+    "author": {
+      "github": "foldkit",
+      "x": null
+    },
+    "source": "https://github.com/foldkit/foldkit/pulls",
+    "engagement": {
+      "stars": 1020
+    }
+  },
+  {
+    "kind": "launch",
+    "url": "https://github.com/joelhooks/potion-calendar",
+    "title": "Potion Calendar",
+    "summary": "A clean-room Google Calendar app built with Effect 4, Alchemy and Foldkit on Cloudflare Workers.",
+    "date": "2026-10-20",
+    "repo": "joelhooks/potion-calendar",
+    "author": {
+      "github": "joelhooks",
+      "x": "joelhooks"
+    },
+    "source": "https://x.com/joelhooks/status/2112382862502895983",
+    "engagement": {
+      "stars": 16
+    }
+  },
+  {
+    "kind": "thread",
+    "url": "https://x.com/JuliaScript/status/2112316050322661762",
+    "title": "effect-harness on Cloudflare with Alchemy",
+    "summary": "effect-harness adds a Cloudflare example deployed with Alchemy: the agent loop runs remotely, clients message it from another machine, and each tool runs separately.",
+    "date": "2026-10-19",
+    "repo": "julia-script/effect-harness",
+    "author": {
+      "github": "julia-script",
+      "x": "JuliaScript"
+    },
+    "source": "https://x.com/JuliaScript/status/2112316050322661762",
+    "engagement": {
+      "likes": 28,
+      "participants": 3,
+      "replies": 3
+    },
+    "topReplies": [
+      {
+        "likes": 1,
+        "text": "@JuliaScript @alchemy_run @EffectTS_ I've been using convex to give all my long running agents a way to save progress or key task metrics as they go,",
+        "url": "https://x.com/ozyman42/status/2112545862891311460",
+        "x": "ozyman42"
+      },
+      {
+        "likes": 1,
+        "text": "@JuliaScript @alchemy_run @EffectTS_ Thanks for effect-harness!! I really want to bring effect stuff into convex more. I'm going to see if i can combi",
+        "url": "https://x.com/ozyman42/status/2112387497871515928",
+        "x": "ozyman42"
+      }
+    ]
   },
   {
     "kind": "release",
