@@ -1,5 +1,8 @@
 verifyDepsBeforeRun: error
 
+overrides:
+  kysely: 0.29.4
+
 packages:
   - "apps/*"
   - "packages/*"
@@ -28,7 +31,7 @@ minimumReleaseAgeExclude:
   - "@effect/vitest@4.0.0"
   - xstate@6.0.0-alpha.69
   - "@xstate/effect@1.0.0-alpha.8"
-  - better-auth@1.6.2
+  - better-auth@1.7.11
   - satori@0.33.5
   - "@alchemy.run/cloudflare-runtime@2.0.0-beta.83"
   - "@alchemy.run/floci@2.0.0-beta.83"

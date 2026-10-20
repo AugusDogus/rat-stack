@@ -11,7 +11,7 @@ const devicePlugin = deviceAuthorization({
   verificationUri: "/learn/approve",
 });
 
-const indexedDeviceSchema = {
+const columnUniqueDeviceSchema = {
   deviceCode: {
     fields: {
       ...devicePlugin.schema.deviceCode.fields,
@@ -24,12 +24,13 @@ const indexedDeviceSchema = {
         unique: true,
       },
     },
+    indexes: [],
   },
 };
 
 export const feedbackDevicePlugin: ReturnType<typeof deviceAuthorization> = {
   ...devicePlugin,
-  schema: indexedDeviceSchema,
+  schema: columnUniqueDeviceSchema,
 };
 
 export const feedbackStoragePlugin = {
