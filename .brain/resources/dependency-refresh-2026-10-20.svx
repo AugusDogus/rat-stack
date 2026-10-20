@@ -1,0 +1,68 @@
+---
+title: Dependency refresh keeps one Effect runtime
+summary: October 20 dependency decisions, compatibility evidence, and the remaining gardener work.
+---
+
+# Dependency refresh keeps one Effect runtime
+
+Effect and its platform, SQL, and test adapters stay at `4.0.0`.
+Foldkit still requires that runtime family.
+Node stays on version 24, with `@types/node` at `24.19.2`.
+
+## Compatibility evidence
+
+- Shiki `4.5.0` preserves the captured highlighting artifact for all 134 fence jobs.
+- That artifact covers 64 configured snippets and 66 ordinary rendered fences.
+- htmlparser2 `12.0.0` preserves reader bodies and metadata for all 146 generated pages.
+- PGlite `0.5.10` passes the database model and migration tests with fresh, in-memory databases.
+- Pi `1.3.0` requires a Promise from the project-status command handler. The handler is now async.
+- Both Pi extensions pass a dedicated strict SDK typecheck. The command also passes a Promise and notification smoke check.
+
+PGlite re-resolution separated the Alchemy peer contexts for auth and its adapter.
+Auth now declares the existing `drizzle-kit` pin as a development dependency.
+Both resolve the same Alchemy instance. No runtime dependency or auth type workaround was added.
+
+## Held updates
+
+| Package | Kept | Reviewed target | Reason |
+| --- | --- | --- | --- |
+| Better Auth | `1.6.2` | `1.7.11` | Version 1.7 adds account issuer migration and backfill work. Current auth tests use memory rather than database upgrade fixtures. |
+| Satori | `0.33.5` | `0.62.0` | The target replaces Yoga with Taffy and changes layout defaults. Asset-generation tests do not establish visual parity. |
+| Oxfmt | `0.73.0` | `0.74.0` | Version 0.74 appeared during the run. The owner kept the brief's fixed version set and deferred it to the next sweep. |
+
+Use a separate migration packet for Better Auth.
+Use a separate visual review for Satori.
+
+## The fence stays strict
+
+- The compiler diagnostic severity map is unchanged.
+- Ultracite `8.0.1` adds `typescript/no-generated-empty-object-type` at error severity.
+- Its broader test-extension exemptions are not adopted.
+- Explicit overrides keep `no-empty-function` and `promise/prefer-await-to-then` at error severity for the newly exempted extensions.
+- Those extensions are `.mts`, `.cts`, `.mjs`, and `.cjs`.
+- Oxfmt `0.73.0` produces no formatting-only changes when `pnpm fix` runs.
+- Worker size limits remain 900,000 bytes per entry and 2,500,000 bytes for total JavaScript.
+
+The compiler plugin `0.54.0` adds advisory diagnostics without changing the gate.
+The owner approved leaving these suggestions for a gardener pass.
+
+| Newly observed rule | Unique package/file/line locations |
+| --- | ---: |
+| `schemaClassMissingBrand` | 111 |
+| `errorPayloadShadowsName` | 6 |
+| `flatMapToTap` | 1 |
+
+`preferTypedSchemaDecoder` already reports 62 unique locations before the update.
+Repeated build and test logs must not be counted as separate source findings.
+
+## Consumer checks
+
+1. Take each dependency family with its lockfile changes.
+2. Keep all workspace occurrences of Node types and Vitest aligned.
+3. Keep auth's development-only `drizzle-kit` pin with the PGlite update.
+4. Run a non-optimistic frozen install, then `pnpm turbo run check test build`.
+5. Refresh missing source mirrors with `pnpm vendor:agent-sources`.
+6. Keep production deployment outside this maintenance packet.
+
+The [source mirror migration note](./xstate-alpha69-migration.svx) documents the held XState family.
+The [code snippets system](./lore/code-snippets.svx) owns the highlighting boundary.
