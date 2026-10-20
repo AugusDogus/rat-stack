@@ -1,7 +1,6 @@
 import { d1AuthLayer } from "@rat-stack/auth/d1";
 import { FeedbackIdentity } from "@rat-stack/auth/feedback";
 import { AuthService as Auth } from "@rat-stack/auth/service";
-import type * as Cloudflare from "alchemy/Cloudflare";
 import * as AlchemyHttp from "alchemy/Http";
 import * as Namespace from "alchemy/Namespace";
 import { CurrentRuntimeContext } from "alchemy/RuntimeContext";
@@ -69,22 +68,10 @@ const makePrivateAuth = () =>
     return { fetch };
   });
 
-type WorkerHost<R> = R extends { readonly Type: "Cloudflare.Worker" }
-  ? Cloudflare.Workers.Worker
-  : R;
-
-type PrivateAuthEffect = ReturnType<typeof makePrivateAuth>;
-
 export default LearnFeedbackAuth.make(
   {
     ...feedbackAuthDeployment,
     main: import.meta.url,
   },
-  // SAFETY: exact-pin Alchemy peer graphs share the Worker context key; only the host requirement is mapped, with all other requirements preserved.
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- @effect-diagnostics-next-line unsafeEffectTypeAssertion:off -- Identical Alchemy pins have incompatible recursive host types across pnpm peer graphs.
-  Effect.suspend(makePrivateAuth) as Effect.Effect<
-    Effect.Success<PrivateAuthEffect>,
-    Effect.Error<PrivateAuthEffect>,
-    WorkerHost<Effect.Services<PrivateAuthEffect>>
-  >
+  Effect.suspend(makePrivateAuth)
 );
